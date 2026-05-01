@@ -1,0 +1,3123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>팀 배정</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #eefcff;
+      --panel: rgba(255, 255, 255, 0.82);
+      --ink: #163240;
+      --muted: #5b7380;
+      --line: rgba(11, 126, 154, 0.14);
+      --accent: #27c7d9;
+      --accent-strong: #109fca;
+      --accent-soft: #b7f5fa;
+      --shadow: 0 22px 50px rgba(20, 104, 133, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "SUIT", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(39, 199, 217, 0.24), transparent 25%),
+        radial-gradient(circle at top right, rgba(16, 159, 202, 0.22), transparent 24%),
+        linear-gradient(180deg, #ddfbff 0%, #effeff 46%, #edf8fb 100%);
+    }
+
+    .page-shell {
+      width: min(1120px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 24px 0 36px;
+    }
+
+    .tab-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.12);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      justify-content: space-between;
+    }
+
+    .tab-button,
+    button,
+    input {
+      font: inherit;
+    }
+
+    .tab-button,
+    button {
+      border: 0;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .tab-button {
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: var(--ink);
+      font-weight: 800;
+      text-shadow: 0 1px 3px rgba(255,255,255,0.6);
+    }
+
+    .tab-button.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      color: white;
+      text-shadow: none;
+      border-color: transparent;
+      box-shadow: 0 12px 24px rgba(16, 159, 202, 0.24);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 28px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .panel-row,
+    .stepper,
+    .inline-form,
+    .team-actions,
+    .result-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-row {
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .teams-top {
+      flex-wrap: wrap;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--ink);
+      outline: none;
+    }
+
+    input:focus {
+      border-color: rgba(39, 199, 217, 0.55);
+      box-shadow: 0 0 0 4px rgba(39, 199, 217, 0.14);
+    }
+
+    .ghost-button,
+    .text-button,
+    .stepper button {
+      padding: 11px 14px;
+      border-radius: 14px;
+      background: rgba(22, 50, 64, 0.07);
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .inline-form input {
+      width: auto;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .inline-form button {
+      padding: 11px 16px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      color: white;
+      font-weight: 800;
+      white-space: nowrap;
+      flex-shrink: 0;
+      box-shadow: 0 12px 24px rgba(16, 159, 202, 0.22);
+    }
+
+    .stepper {
+      padding: 4px;
+      border-radius: 18px;
+      background: rgba(22, 50, 64, 0.05);
+    }
+
+    .stepper input {
+      width: 72px;
+      text-align: center;
+      border: 0;
+      box-shadow: none;
+      background: transparent;
+    }
+
+    .slot-input-grid {
+      display: grid;
+      gap: 6px;
+    }
+
+    .top-grid {
+      margin-bottom: 0;
+    }
+
+    .bottom-grid {
+      margin-top: 0;
+    }
+
+    .slot-input-grid input {
+      padding: 8px 10px;
+      font-size: 13px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .ladder-container {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .ladder-board-wrap {
+      padding: 10px;
+      border-radius: 24px;
+      border: 1px solid rgba(22, 50, 64, 0.08);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.96), rgba(236,252,255,0.98)),
+        repeating-linear-gradient(90deg, transparent, transparent 32px, rgba(16, 159, 202, 0.03) 32px, rgba(16, 159, 202, 0.03) 33px);
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    #ladder-canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .result-box {
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(22, 50, 64, 0.08);
+      height: fit-content;
+    }
+
+    .result-head {
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-weight: 800;
+    }
+
+    .result-list {
+      display: grid;
+      gap: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .result-list.empty {
+      color: var(--muted);
+    }
+
+    .result-item {
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(22, 50, 64, 0.08);
+      font-weight: 700;
+      font-size: 14px;
+      word-break: break-word;
+    }
+
+    .name-bank,
+    .team-slot {
+      min-height: 88px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px dashed rgba(16, 159, 202, 0.22);
+      background: rgba(255, 255, 255, 0.82);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-content: flex-start;
+    }
+
+    .name-bank {
+      margin-bottom: 16px;
+    }
+
+    .name-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-width: 72px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #1e91b2, #27c7d9);
+      color: white;
+      font-weight: 800;
+      box-shadow: 0 10px 18px rgba(16, 159, 202, 0.2);
+      user-select: none;
+    }
+
+    .name-tag.dragging {
+      opacity: 0.55;
+    }
+
+    .name-tag-del {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.65);
+      font-size: 14px;
+      padding: 0 2px;
+      cursor: pointer;
+      line-height: 1;
+      font-weight: 400;
+      transition: color 0.15s;
+    }
+
+    .name-tag-del:hover {
+      color: white;
+    }
+
+    .ladder-name-wrap {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .ladder-del-btn {
+      flex: 0 0 auto;
+      padding: 6px 9px;
+      border-radius: 8px;
+      background: rgba(22, 50, 64, 0.08);
+      color: var(--muted);
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .ladder-del-btn:hover {
+      background: rgba(220, 50, 50, 0.12);
+      color: #e04040;
+    }
+
+    .dropzone.over {
+      background: rgba(183, 245, 250, 0.45);
+      border-color: rgba(16, 159, 202, 0.48);
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .team-card {
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(22, 50, 64, 0.08);
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .team-card input {
+      margin-bottom: 10px;
+      font-weight: 800;
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .team-reset-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 1024px) {
+      .ladder-container {
+        grid-template-columns: 1fr;
+      }
+
+      .result-box {
+        height: auto;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .page-shell {
+        width: min(100% - 16px, 1120px);
+        padding-top: 16px;
+      }
+
+      .panel {
+        padding: 16px;
+        border-radius: 22px;
+      }
+
+      .panel-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .tab-bar,
+      .team-actions {
+        flex-wrap: wrap;
+      }
+
+      .inline-form {
+        flex-wrap: nowrap;
+      }
+
+      .ladder-container {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .team-reset-buttons {
+        width: 100%;
+      }
+
+      .team-reset-buttons button {
+        flex: 1;
+      }
+    }
+
+    /* 카드 뽑기 */
+    .card-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 16px;
+    }
+
+    .card-main {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card-range-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .card-range-row input {
+      width: 90px;
+      text-align: center;
+      padding: 10px 12px;
+      border-radius: 14px;
+    }
+
+    .card-range-label {
+      font-weight: 700;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .card-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 220px;
+      border-radius: 24px;
+      border: 1px solid rgba(22, 50, 64, 0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(236,252,255,0.98));
+      gap: 10px;
+    }
+
+    .card-number {
+      font-size: 96px;
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1;
+      transition: transform 0.1s ease;
+    }
+
+    .card-number.pop {
+      transform: scale(1.18);
+    }
+
+    .card-number.empty {
+      font-size: 32px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .card-sub {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .card-draw-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      color: white;
+      font-size: 17px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 12px 24px rgba(16, 159, 202, 0.28);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .card-draw-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 32px rgba(16, 159, 202, 0.34);
+    }
+
+    .card-draw-btn:disabled {
+      background: rgba(22, 50, 64, 0.12);
+      color: var(--muted);
+      box-shadow: none;
+      transform: none;
+      cursor: not-allowed;
+    }
+
+    .card-log-box {
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(22, 50, 64, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: fit-content;
+    }
+
+    .card-log-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 800;
+    }
+
+    .card-log-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .card-log-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.94);
+      border: 1px solid rgba(22,50,64,0.08);
+      font-weight: 700;
+    }
+
+    .card-log-order {
+      font-size: 12px;
+      color: var(--muted);
+      min-width: 24px;
+    }
+
+    .card-log-num {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--accent-strong);
+    }
+
+    .card-remain {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .card-remain.error {
+      color: #e04040;
+    }
+
+    .card-range-row input.input-error {
+      border-color: rgba(220, 50, 50, 0.6);
+      box-shadow: 0 0 0 4px rgba(220, 50, 50, 0.1);
+    }
+
+    @media (max-width: 1024px) {
+      .card-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ── 핀볼 입력기 ── */
+    .pinball-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 16px;
+    }
+
+    .pinball-left {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .pinball-error {
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(220, 50, 50, 0.08);
+      border: 1px solid rgba(220, 50, 50, 0.25);
+      color: #c0392b;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .pinball-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .pinball-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(22, 50, 64, 0.08);
+    }
+
+    .pinball-item-name {
+      flex: 1;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .pinball-item-count {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--accent-strong);
+      min-width: 36px;
+      text-align: center;
+    }
+
+    .pinball-item-btns {
+      display: flex;
+      gap: 4px;
+    }
+
+    .pinball-item-btns button {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(22, 50, 64, 0.07);
+      border: none;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .pinball-item-btns button:hover {
+      background: rgba(22, 50, 64, 0.14);
+    }
+
+    .pinball-item-btns .del-btn {
+      color: #e04040;
+    }
+
+    .pinball-item-btns .del-btn:hover {
+      background: rgba(220, 50, 50, 0.12);
+    }
+
+    .pinball-summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .pinball-summary-item {
+      padding: 6px 12px;
+      border-radius: 10px;
+      background: rgba(22, 50, 64, 0.06);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .pinball-summary-total {
+      background: rgba(39, 199, 217, 0.13);
+      border: 1px solid rgba(39, 199, 217, 0.3);
+      color: var(--accent-strong);
+    }
+
+    .pinball-output {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.8;
+      word-break: break-all;
+      user-select: all;
+    }
+
+    .pinball-output.has-data {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .pinball-empty {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 24px 0;
+    }
+
+    @media (max-width: 1024px) {
+      .pinball-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ── 음량 조절 (삭제됨) ── */
+    .volume-control-unused {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(22, 50, 64, 0.06);
+      width: fit-content;
+    }
+
+    .volume-control label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .volume-control input[type="range"] {
+      width: 120px;
+      height: 5px;
+      border-radius: 3px;
+      background: rgba(22, 50, 64, 0.15);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .volume-control input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(16, 159, 202, 0.3);
+    }
+
+    .volume-control input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(16, 159, 202, 0.3);
+    }
+
+    .volume-mute-btn {
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(22, 50, 64, 0.1);
+      border: none;
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .volume-mute-btn:hover {
+      background: rgba(22, 50, 64, 0.18);
+    }
+
+    .volume-mute-btn.muted {
+      color: #e04040;
+      background: rgba(220, 50, 50, 0.1);
+    }
+
+    /* ── 설정 메뉴 ── */
+    /* QR 코드 탭 */
+    .qr-layout {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .qr-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 260px;
+    }
+    .qr-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+      margin-bottom: 2px;
+      display: block;
+    }
+    .qr-url-input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1.5px solid rgba(22,50,64,0.15);
+      background: rgba(255,255,255,0.7);
+      font-size: 0.95rem;
+      color: var(--ink);
+      outline: none;
+      box-sizing: border-box;
+    }
+    .qr-url-input:focus {
+      border-color: rgba(22,50,64,0.4);
+    }
+    .qr-color-row {
+      display: flex;
+      gap: 20px;
+    }
+    .qr-color-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .qr-color-picker {
+      width: 52px;
+      height: 36px;
+      border: none;
+      border-radius: 8px;
+      padding: 2px;
+      cursor: pointer;
+      background: none;
+    }
+    .qr-result {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+    #qr-canvas-wrap canvas,
+    #qr-canvas-wrap img {
+      border-radius: 12px;
+      box-shadow: 0 4px 18px rgba(22,50,64,0.13);
+      display: block;
+    }
+    .qr-action-row {
+      display: flex;
+      gap: 10px;
+    }
+    .qr-copy-msg {
+      font-size: 0.85rem;
+      color: var(--muted);
+      min-height: 1.2em;
+    }
+
+    .settings-btn {
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(22, 50, 64, 0.08);
+      border: none;
+      color: var(--ink);
+      font-size: 20px;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      height: 40px;
+    }
+
+    .settings-btn:hover {
+      background: rgba(22, 50, 64, 0.15);
+    }
+
+    .settings-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .settings-modal.active {
+      display: flex;
+    }
+
+    .settings-panel {
+      background: white;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .settings-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .settings-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .settings-section {
+      margin-bottom: 24px;
+    }
+
+    .settings-section-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .settings-volume-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .settings-volume-row input[type="range"] {
+      flex: 1;
+      height: 5px;
+      border-radius: 3px;
+      background: rgba(22, 50, 64, 0.15);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .settings-volume-row input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(16, 159, 202, 0.3);
+    }
+
+    .settings-volume-row input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(16, 159, 202, 0.3);
+    }
+
+    .settings-volume-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      min-width: 40px;
+      text-align: right;
+    }
+
+    .settings-mute-toggle {
+      display: flex;
+      gap: 8px;
+    }
+
+    .settings-mute-toggle button {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(22, 50, 64, 0.15);
+      background: rgba(22, 50, 64, 0.06);
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .settings-mute-toggle button.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      color: white;
+      border-color: transparent;
+    }
+
+    .settings-color-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .settings-color-btn {
+      aspect-ratio: 1;
+      border-radius: 16px;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .settings-color-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .settings-color-btn.active {
+      border-color: var(--ink);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .settings-overlay {
+      display: none;
+    }
+
+    /* ── 유틸리티 (타이머/스톱워치/현재시간) ── */
+
+    .utils-card {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(22, 50, 64, 0.08);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .utils-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+
+    .utils-display,
+    .timer-display,
+    .stopwatch-display {
+      font-family: "Courier New", monospace;
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--accent-strong);
+      text-align: center;
+      padding: 20px;
+      background: rgba(39, 199, 217, 0.08);
+      border-radius: 16px;
+      margin-bottom: 16px;
+      letter-spacing: 2px;
+      line-height: 1.2;
+    }
+
+    .timer-input-section {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .timer-input-fields {
+      display: flex;
+      gap: 6px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .timer-input-group {
+      flex: 1;
+      min-width: 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .timer-input-group label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .timer-input-field {
+      width: 100%;
+      padding: 8px 6px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+    }
+
+    .timer-input-field:focus {
+      border-color: rgba(39, 199, 217, 0.55);
+      box-shadow: 0 0 0 3px rgba(39, 199, 217, 0.1);
+    }
+
+    .timer-input-section input.timer-input-field {
+      flex: 1;
+    }
+
+    .timer-btn-start,
+    .timer-btn,
+    .stopwatch-btn {
+      padding: 11px 16px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      color: white;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .timer-btn-start {
+      flex: 0.8;
+    }
+
+    .timer-btn-start:hover,
+    .timer-btn:hover,
+    .stopwatch-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(16, 159, 202, 0.3);
+    }
+
+    .timer-quick-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .timer-quick-btn {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(22, 50, 64, 0.15);
+      background: rgba(22, 50, 64, 0.06);
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .timer-quick-btn:hover {
+      background: rgba(22, 50, 64, 0.12);
+      border-color: var(--accent);
+    }
+
+    .timer-quick-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .timer-control {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .timer-control button {
+      flex: 1;
+    }
+
+    .timer-alert-toggle {
+      display: flex;
+      align-items: center;
+    }
+
+    .timer-alert-toggle label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .timer-alert-toggle input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .stopwatch-control {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .stopwatch-control button {
+      flex: 1;
+    }
+
+    .stopwatch-records {
+      margin-bottom: 12px;
+    }
+
+    .stopwatch-records button {
+      width: 100%;
+    }
+
+    .stopwatch-laps {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .stopwatch-lap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(22, 50, 64, 0.06);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      font-family: "Courier New", monospace;
+    }
+
+    .stopwatch-lap-label {
+      color: var(--muted);
+    }
+
+    .stopwatch-lap-time {
+      color: var(--accent-strong);
+      font-weight: 800;
+    }
+
+    @media (max-width: 768px) {
+      .utils-display,
+      .timer-display,
+      .stopwatch-display {
+        font-size: 32px;
+      }
+
+      .timer-quick-buttons {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <nav class="tab-bar" style="justify-content:space-between;" aria-label="기능 선택">
+      <div style="display:flex;gap:10px;">
+        <button class="tab-button active" data-tab-target="ladder">사다리</button>
+        <button class="tab-button" data-tab-target="teams">팀 나누기</button>
+        <button class="tab-button" data-tab-target="card">카드 뽑기</button>
+        <button class="tab-button" data-tab-target="pinball">핀볼 입력기</button>
+        <button class="tab-button" data-tab-target="utils">시계</button>
+        <button class="tab-button" data-tab-target="qr">QR코드</button>
+      </div>
+      <button id="settings-open" class="settings-btn" title="설정" onclick="document.getElementById('settings-modal').classList.add('active'); return false;">⚙️</button>
+    </nav>
+
+    <main>
+      <section id="tab-ladder" class="tab-panel active">
+        <div class="panel">
+          <div class="panel-row">
+            <div class="stepper">
+              <button type="button" id="ladder-count-down">-</button>
+              <input id="ladder-count" type="number" min="2" max="12" value="4">
+              <button type="button" id="ladder-count-up">+</button>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button id="ladder-run-all" class="ghost-button">전체 실행</button>
+              <button id="ladder-generate" class="ghost-button">리셋</button>
+            </div>
+          </div>
+
+          <div class="ladder-container">
+            <div class="ladder-board-wrap">
+              <div id="ladder-top-inputs" class="slot-input-grid top-grid"></div>
+              <canvas id="ladder-canvas" width="600" height="480"></canvas>
+              <div id="ladder-bottom-inputs" class="slot-input-grid bottom-grid"></div>
+            </div>
+            <div class="result-box">
+              <div class="result-head">
+                <span>최종 결과</span>
+                <button id="ladder-clear-result" class="text-button">지우기</button>
+              </div>
+              <div id="ladder-result-list" class="result-list empty">아직 결과가 없습니다.</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <section id="tab-teams" class="tab-panel">
+        <div class="panel">
+          <div class="panel-row teams-top">
+            <div class="inline-form">
+              <input id="team-name-input" type="text" placeholder="이름 입력">
+              <button id="team-name-add" type="button">추가</button>
+            </div>
+            <div class="team-actions">
+              <button id="team-add" class="ghost-button">팀 +</button>
+              <button id="team-remove" class="ghost-button">팀 -</button>
+              <button id="team-shuffle" class="ghost-button">랜덤</button>
+            </div>
+          </div>
+
+          <div class="team-reset-buttons">
+            <button id="team-reset-names" class="ghost-button">이름만 제거</button>
+            <button id="team-reset-all" class="ghost-button">전체 리셋</button>
+            <button id="team-copy-result" class="ghost-button">결과 복사 📋</button>
+          </div>
+
+          <div id="name-bank" class="name-bank dropzone"></div>
+          <div id="team-grid" class="team-grid"></div>
+        </div>
+      </section>
+      <section id="tab-card" class="tab-panel">
+        <div class="panel">
+          <div class="card-layout">
+            <div class="card-main">
+              <div class="card-range-row">
+                <input id="card-min" type="number" value="1" min="0">
+                <span class="card-range-label">~</span>
+                <input id="card-max" type="number" value="20" min="1">
+                <button id="card-reset" class="ghost-button">리셋</button>
+              </div>
+              <div class="card-display">
+                <div id="card-number" class="card-number empty">?</div>
+                <div id="card-sub" class="card-sub">버튼을 눌러 뽑기</div>
+              </div>
+              <div id="card-remain" class="card-remain"></div>
+              <button id="card-draw" class="card-draw-btn">뽑기</button>
+            </div>
+            <div class="card-log-box">
+              <div class="card-log-head">
+                <span>뽑기 기록</span>
+                <button id="card-clear-log" class="text-button">지우기</button>
+              </div>
+              <div id="card-log-list" class="card-log-list">
+                <div style="color:var(--muted);font-size:13px;">아직 뽑은 카드가 없습니다.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-pinball" class="tab-panel">
+        <div class="panel">
+          <div class="pinball-layout">
+
+            <div class="pinball-left">
+              <input id="pinball-input" type="text" placeholder="이름 / 갯수  →  Enter로 추가">
+              <div id="pinball-error" class="pinball-error" style="display:none;"></div>
+              <div id="pinball-list" class="pinball-list">
+                <div class="pinball-empty">항목을 입력하고 Enter를 누르세요.</div>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div class="result-box">
+                <div class="result-head">
+                  <span>결과</span>
+                  <button id="pinball-copy" class="text-button">복사 📋</button>
+                </div>
+                <div id="pinball-summary" class="pinball-summary"></div>
+                <div id="pinball-output" class="pinball-output">아직 항목이 없습니다.</div>
+              </div>
+              <button id="pinball-reset" class="ghost-button" style="width:100%;">전체 리셋</button>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-utils" class="tab-panel">
+        <div class="panel">
+
+          <!-- 타이머 -->
+          <div class="utils-card">
+            <div class="utils-title">⏱️ 타이머</div>
+
+            <div class="timer-display" id="timer-display">00:00:00</div>
+
+            <div class="timer-input-section" id="timer-input-section">
+              <div class="timer-input-fields">
+                <div class="timer-input-group">
+                  <label>시</label>
+                  <input id="timer-hour-input" type="number" min="0" max="59" value="0" class="timer-input-field">
+                </div>
+                <div class="timer-input-group">
+                  <label>분</label>
+                  <input id="timer-min-input" type="number" min="0" max="59" value="0" class="timer-input-field">
+                </div>
+                <div class="timer-input-group">
+                  <label>초</label>
+                  <input id="timer-sec-input" type="number" min="0" max="59" value="0" class="timer-input-field">
+                </div>
+              </div>
+              <button id="timer-manual-btn" class="timer-btn-start">시작</button>
+            </div>
+
+            <div class="timer-quick-buttons" id="timer-quick-buttons">
+              <button class="timer-quick-btn" data-add="5">+5초</button>
+              <button class="timer-quick-btn" data-add="10">+10초</button>
+              <button class="timer-quick-btn" data-add="15">+15초</button>
+            </div>
+
+            <div class="timer-control">
+              <button id="timer-pause-resume" class="timer-btn" style="display:none;">일시정지</button>
+              <button id="timer-stop" class="timer-btn" style="display:none;">중지</button>
+            </div>
+
+            <div class="timer-alert-toggle">
+              <label>
+                <input id="timer-alert-10s" type="checkbox" checked>
+                <span>10초전 경고음</span>
+              </label>
+              <label>
+                <input id="timer-alert-5s" type="checkbox" checked>
+                <span>5초전 경고음</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 스톱워치 -->
+          <div class="utils-card">
+            <div class="utils-title">⏰ 스톱워치</div>
+
+            <div class="stopwatch-display" id="stopwatch-display">00:00:00.000</div>
+
+            <div class="stopwatch-control">
+              <button id="stopwatch-start" class="stopwatch-btn">시작</button>
+              <button id="stopwatch-pause" class="stopwatch-btn" style="display:none;">일시정지</button>
+              <button id="stopwatch-resume" class="stopwatch-btn" style="display:none;">계속</button>
+              <button id="stopwatch-stop" class="stopwatch-btn">리셋</button>
+            </div>
+
+            <div class="stopwatch-records">
+              <button id="stopwatch-record" class="stopwatch-btn" style="display:none;">기록</button>
+            </div>
+
+            <div id="stopwatch-laps" class="stopwatch-laps"></div>
+          </div>
+
+          <!-- 현재시간 -->
+          <div class="utils-card">
+            <div class="utils-title">🕐 현재시간</div>
+            <div class="utils-display" id="current-time">00:00:00.000</div>
+          </div>
+
+        </div>
+      </section>
+
+      <section id="tab-qr" class="tab-panel">
+        <div class="panel">
+          <div class="qr-layout">
+            <div class="qr-inputs">
+              <label class="qr-label">인터넷 주소 (URL)</label>
+              <input id="qr-url-input" class="qr-url-input" type="url" placeholder="https://example.com" autocomplete="off" />
+              <div class="qr-color-row">
+                <div class="qr-color-group">
+                  <label class="qr-label">QR 색상</label>
+                  <input id="qr-fg-color" type="color" class="qr-color-picker" value="#163240" />
+                </div>
+                <div class="qr-color-group">
+                  <label class="qr-label">외곽 띠 색상</label>
+                  <input id="qr-border-color" type="color" class="qr-color-picker" value="#163240" />
+                </div>
+              </div>
+              <button id="qr-generate-btn" class="action-btn">QR 생성</button>
+            </div>
+            <div class="qr-result" id="qr-result" style="display:none;">
+              <div id="qr-canvas-wrap"></div>
+              <div class="qr-action-row">
+                <button id="qr-copy-btn" class="action-btn">이미지 복사</button>
+                <button id="qr-download-btn" class="action-btn">다운로드</button>
+              </div>
+              <div id="qr-copy-msg" class="qr-copy-msg"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 설정 모달 -->
+  <div id="settings-modal" class="settings-modal">
+    <div class="settings-overlay" id="settings-overlay"></div>
+    <div class="settings-panel">
+      <div class="settings-title">
+        <span>⚙️ 설정</span>
+        <button id="settings-close" class="settings-close">✕</button>
+      </div>
+
+      <!-- 음량 조절 -->
+      <div class="settings-section">
+        <label class="settings-section-label">음량</label>
+        <div class="settings-volume-row">
+          <input id="settings-volume" type="range" min="0" max="200" value="50">
+          <span class="settings-volume-text" id="settings-volume-text">50%</span>
+        </div>
+      </div>
+
+      <!-- 음소거 토글 -->
+      <div class="settings-section">
+        <label class="settings-section-label">음소거</label>
+        <div class="settings-mute-toggle">
+          <button id="settings-sound-on" class="active">켜기</button>
+          <button id="settings-sound-off">끄기</button>
+        </div>
+      </div>
+
+      <!-- 배경색 선택 -->
+      <div class="settings-section">
+        <label class="settings-section-label">배경색</label>
+        <div class="settings-color-grid">
+          <button class="settings-color-btn active" data-color="default" style="background:linear-gradient(135deg,#ddfbff,#effeff);"></button>
+          <button class="settings-color-btn" data-color="dark" style="background:#2d3e50;"></button>
+          <button class="settings-color-btn" data-color="light" style="background:#f8f9fa;"></button>
+          <button class="settings-color-btn" data-color="pastel-blue" style="background:#e3f2fd;"></button>
+          <button class="settings-color-btn" data-color="pastel-pink" style="background:#fce4ec;"></button>
+          <button class="settings-color-btn" data-color="pastel-green" style="background:#e8f5e9;"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ladderCountInput = document.querySelector("#ladder-count");
+    const ladderCanvas = document.querySelector("#ladder-canvas");
+    const ladderTopInputs = document.querySelector("#ladder-top-inputs");
+    const ladderBottomInputs = document.querySelector("#ladder-bottom-inputs");
+    const ladderResultList = document.querySelector("#ladder-result-list");
+
+    const teamGrid = document.querySelector("#team-grid");
+    const nameBank = document.querySelector("#name-bank");
+    const teamNameInput = document.querySelector("#team-name-input");
+
+    const audioState = {
+      ctx: null,
+      volume: 0.5,
+      muted: false,
+    };
+    window.__appAudio = audioState; // 설정 스크립트와 공유 (스크립트 오류와 무관하게 즉시 노출)
+
+    const ladderState = {
+      count: 4,
+      names: ["천양", "마다옴", "모카", "문모모"],
+      results: ["1팀", "2팀", "꽝", "보너스"],
+      rows: [],
+      activeIndex: null,
+      highlightSegments: [],
+      finalResults: [],
+      animationToken: 0,
+    };
+
+    const TEAM_COLORS = [
+      { bg: "rgba(39, 199, 217, 0.13)",  border: "rgba(39, 199, 217, 0.35)",  tag: "linear-gradient(135deg,#1e91b2,#27c7d9)" },
+      { bg: "rgba(72, 199, 116, 0.13)",  border: "rgba(72, 199, 116, 0.35)",  tag: "linear-gradient(135deg,#2a9d5c,#48c774)" },
+      { bg: "rgba(255, 159, 67, 0.13)",  border: "rgba(255, 159, 67, 0.35)",  tag: "linear-gradient(135deg,#e07b00,#ff9f43)" },
+      { bg: "rgba(168, 85, 247, 0.13)",  border: "rgba(168, 85, 247, 0.35)",  tag: "linear-gradient(135deg,#7c3aed,#a855f7)" },
+      { bg: "rgba(236, 72, 153, 0.13)",  border: "rgba(236, 72, 153, 0.35)",  tag: "linear-gradient(135deg,#be185d,#ec4899)" },
+      { bg: "rgba(234, 179, 8, 0.13)",   border: "rgba(234, 179, 8, 0.35)",   tag: "linear-gradient(135deg,#b45309,#eab308)" },
+      { bg: "rgba(239, 68, 68, 0.13)",   border: "rgba(239, 68, 68, 0.35)",   tag: "linear-gradient(135deg,#b91c1c,#ef4444)" },
+      { bg: "rgba(20, 184, 166, 0.13)",  border: "rgba(20, 184, 166, 0.35)",  tag: "linear-gradient(135deg,#0f766e,#14b8a6)" },
+    ];
+
+    const teamState = {
+      nextId: 1,
+      names: [],
+      teams: [
+        { id: 1, name: "1팀" },
+        { id: 2, name: "2팀" },
+      ],
+    };
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function getAudioContext() {
+      if (!audioState.ctx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) {
+          return null;
+        }
+        audioState.ctx = new AudioContextClass();
+      }
+      return audioState.ctx;
+    }
+
+    function playTone({ frequency = 440, duration = 0.12, type = "sine", gain = 0.05, slideTo } = {}) {
+      const ctx = getAudioContext();
+      if (!ctx || audioState.muted) {
+        return;
+      }
+
+      if (ctx.state === "suspended") {
+        ctx.resume();
+      }
+
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const amp = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(frequency, now);
+      if (slideTo) {
+        osc.frequency.exponentialRampToValueAtTime(slideTo, now + duration);
+      }
+      const finalGain = gain * audioState.volume;
+      amp.gain.setValueAtTime(0.0001, now);
+      amp.gain.exponentialRampToValueAtTime(finalGain, now + 0.01);
+      amp.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+      osc.connect(amp).connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + duration + 0.02);
+    }
+
+    function playLadderSound() {
+      playTone({ frequency: 460, duration: 0.08, type: "triangle", gain: 0.12, slideTo: 620 });
+      setTimeout(() => {
+        playTone({ frequency: 680, duration: 0.08, type: "triangle", gain: 0.1, slideTo: 820 });
+      }, 70);
+    }
+
+    function playDropSound() {
+      // 부드러운 낮은 음: sine파, 하강 피치, 낮은 gain
+      playTone({ frequency: 300, duration: 0.12, type: "sine", gain: 0.05, slideTo: 180 });
+    }
+
+    function setGridColumns(element, count) {
+      element.style.gridTemplateColumns = `repeat(${count}, minmax(0, 1fr))`;
+    }
+
+    function ensureLadderLists() {
+      while (ladderState.names.length < ladderState.count) {
+        ladderState.names.push("");
+      }
+      while (ladderState.results.length < ladderState.count) {
+        ladderState.results.push("");
+      }
+      ladderState.names = ladderState.names.slice(0, ladderState.count);
+      ladderState.results = ladderState.results.slice(0, ladderState.count);
+    }
+
+    function buildLadderRows(count) {
+      const totalRows = 8 + count;
+      const rows = [];
+
+      for (let rowIndex = 0; rowIndex < totalRows; rowIndex += 1) {
+        const row = Array(count - 1).fill(false);
+        for (let column = 0; column < count - 1; column += 1) {
+          if (row[column - 1]) {
+            continue;
+          }
+          row[column] = Math.random() > 0.58;
+        }
+        rows.push(row);
+      }
+
+      if (count > 2) {
+        const leftColumnExists = rows.some((row) => row[0]);
+        const rightColumnExists = rows.some((row) => row[count - 2]);
+        if (!leftColumnExists) {
+          rows[Math.floor(Math.random() * rows.length)][0] = true;
+        }
+        if (!rightColumnExists) {
+          const rowIndex = Math.floor(Math.random() * rows.length);
+          rows[rowIndex][count - 2] = true;
+          if (count - 3 >= 0) {
+            rows[rowIndex][count - 3] = false;
+          }
+        }
+      }
+
+      const totalBridges = rows.reduce((sum, row) => sum + row.filter(Boolean).length, 0);
+      if (totalBridges < 2) {
+        rows[1][0] = true;
+        if (count - 2 >= 1) {
+          rows[rows.length - 2][count - 2] = true;
+        }
+      }
+
+      return rows;
+    }
+
+    function getLadderMetrics() {
+      const canvas = ladderCanvas;
+      const ctx = canvas.getContext("2d");
+      const width = canvas.width;
+      const height = canvas.height;
+      const paddingX = 50;
+      const paddingTop = 36;
+      const paddingBottom = 56;
+      const spacing = ladderState.count > 1 ? (width - paddingX * 2) / (ladderState.count - 1) : 0;
+      const rowGap = (height - paddingTop - paddingBottom) / ((ladderState.rows.length || 1) + 1);
+      return { ctx, width, height, paddingX, paddingY: paddingTop, paddingBottom, spacing, rowGap };
+    }
+
+    function traceLadder(startIndex) {
+      const { paddingX, paddingY, paddingBottom, height, spacing, rowGap } = getLadderMetrics();
+      let lane = startIndex;
+      let x = paddingX + spacing * lane;
+      let y = paddingY;
+      const segments = [];
+
+      ladderState.rows.forEach((row, rowIndex) => {
+        const nextY = paddingY + rowGap * (rowIndex + 1);
+        segments.push({ x1: x, y1: y, x2: x, y2: nextY });
+        y = nextY;
+
+        if (row[lane]) {
+          const nextX = paddingX + spacing * (lane + 1);
+          segments.push({ x1: x, y1: y, x2: nextX, y2: y });
+          lane += 1;
+          x = nextX;
+        } else if (lane > 0 && row[lane - 1]) {
+          const nextX = paddingX + spacing * (lane - 1);
+          segments.push({ x1: x, y1: y, x2: nextX, y2: y });
+          lane -= 1;
+          x = nextX;
+        }
+      });
+
+      // 마지막 가로 다리 아래 세로선까지 연장
+      const endY = height - paddingBottom;
+      segments.push({ x1: x, y1: y, x2: x, y2: endY });
+
+      return { segments, endIndex: lane };
+    }
+
+    function renderLadderResults() {
+      if (!ladderState.finalResults.length) {
+        ladderResultList.className = "result-list empty";
+        ladderResultList.textContent = "아직 결과가 없습니다.";
+        return;
+      }
+
+      ladderResultList.className = "result-list";
+      ladderResultList.innerHTML = "";
+
+      ladderState.finalResults.forEach((entry) => {
+        const item = document.createElement("div");
+        item.className = "result-item";
+        item.textContent = `${entry.name || "이름 없음"} → ${entry.result || "결과 없음"}`;
+        ladderResultList.appendChild(item);
+      });
+    }
+
+    function deleteLadderLane(index) {
+      if (ladderState.count <= 2) return;
+      ladderState.names.splice(index, 1);
+      ladderState.results.splice(index, 1);
+      ladderState.count -= 1;
+      ladderCountInput.value = String(ladderState.count);
+      ladderState.rows = buildLadderRows(ladderState.count);
+      ladderState.activeIndex = null;
+      ladderState.highlightSegments = [];
+      ladderState.finalResults = [];
+      renderLadderInputs();
+      renderLadder();
+      renderLadderResults();
+    }
+
+    function renderLadderInputs() {
+      ladderTopInputs.innerHTML = "";
+      ladderBottomInputs.innerHTML = "";
+      setGridColumns(ladderTopInputs, ladderState.count);
+      setGridColumns(ladderBottomInputs, ladderState.count);
+
+      ladderState.names.forEach((name, index) => {
+        const wrap = document.createElement("div");
+        wrap.className = "ladder-name-wrap";
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = name;
+        input.placeholder = `이름 ${index + 1}`;
+        input.style.cssText = "padding:8px 10px;font-size:13px;border-radius:10px;text-align:center;";
+        input.addEventListener("input", () => {
+          ladderState.names[index] = input.value.trim();
+          renderLadder();
+        });
+
+        const del = document.createElement("button");
+        del.className = "ladder-del-btn";
+        del.textContent = "×";
+        del.title = "삭제";
+        del.addEventListener("click", () => deleteLadderLane(index));
+
+        wrap.append(input, del);
+        ladderTopInputs.appendChild(wrap);
+      });
+
+      ladderState.results.forEach((result, index) => {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = result;
+        input.placeholder = `결과 ${index + 1}`;
+        input.addEventListener("input", () => {
+          ladderState.results[index] = input.value.trim();
+          renderLadder();
+        });
+        ladderBottomInputs.appendChild(input);
+      });
+    }
+
+    function renderLadder() {
+      const { ctx, width, height, paddingX, paddingY, paddingBottom, spacing, rowGap } = getLadderMetrics();
+      ctx.clearRect(0, 0, width, height);
+      ctx.lineCap = "round";
+
+      // 이름 텍스트 (사다리 시작 라인 바로 위)
+      ctx.font = "bold 14px SUIT, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      for (let lane = 0; lane < ladderState.count; lane += 1) {
+        const x = paddingX + spacing * lane;
+        const name = ladderState.names[lane] || `이름 ${lane + 1}`;
+        ctx.fillStyle = ladderState.activeIndex === lane ? "#FF0000" : "#163240";
+        ctx.fillText(name, x, paddingY / 2);
+      }
+
+      // 세로선
+      for (let lane = 0; lane < ladderState.count; lane += 1) {
+        const x = paddingX + spacing * lane;
+        ctx.beginPath();
+        ctx.strokeStyle = "#11536a";
+        ctx.lineWidth = 4;
+        ctx.moveTo(x, paddingY);
+        ctx.lineTo(x, height - paddingBottom);
+        ctx.stroke();
+      }
+
+      // 가로 다리
+      ladderState.rows.forEach((row, rowIndex) => {
+        const y = paddingY + rowGap * (rowIndex + 1);
+        row.forEach((hasBridge, column) => {
+          if (!hasBridge) return;
+          const startX = paddingX + spacing * column;
+          const endX = paddingX + spacing * (column + 1);
+          ctx.beginPath();
+          ctx.strokeStyle = "#16b8d4";
+          ctx.lineWidth = 6;
+          ctx.moveTo(startX, y);
+          ctx.lineTo(endX, y);
+          ctx.stroke();
+        });
+      });
+
+      // 하이라이트 경로
+      ladderState.highlightSegments.forEach((segment, index) => {
+        ctx.beginPath();
+        ctx.strokeStyle = index === ladderState.highlightSegments.length - 1 ? "#FF0000" : "#FF6666";
+        ctx.lineWidth = 8;
+        ctx.moveTo(segment.x1, segment.y1);
+        ctx.lineTo(segment.x2, segment.y2);
+        ctx.stroke();
+      });
+
+      // 결과 텍스트 (사다리 끝 라인 바로 아래)
+      ctx.font = "bold 14px SUIT, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      for (let lane = 0; lane < ladderState.count; lane += 1) {
+        const x = paddingX + spacing * lane;
+        const result = ladderState.results[lane] || `결과 ${lane + 1}`;
+        ctx.fillStyle = "#163240";
+        ctx.fillText(result, x, height - paddingBottom / 2);
+      }
+    }
+
+    function animateLadderPath(segments, onComplete) {
+      ladderState.animationToken += 1;
+      const token = ladderState.animationToken;
+      ladderState.highlightSegments = [];
+      renderLadder();
+      let index = 0;
+
+      const timer = setInterval(() => {
+        if (token !== ladderState.animationToken) {
+          clearInterval(timer);
+          return;
+        }
+
+        ladderState.highlightSegments.push(segments[index]);
+        renderLadder();
+        index += 1;
+
+        if (index >= segments.length) {
+          clearInterval(timer);
+          if (onComplete) onComplete();
+        }
+      }, 100);
+    }
+
+    function runLadder(startIndex, onDone) {
+      ladderState.activeIndex = startIndex;
+      playLadderSound();
+
+      const traced = traceLadder(startIndex);
+
+      animateLadderPath(traced.segments, () => {
+        const name = ladderState.names[startIndex] || `이름 ${startIndex + 1}`;
+        const result = ladderState.results[traced.endIndex] || `결과 ${traced.endIndex + 1}`;
+        const existing = ladderState.finalResults.findIndex((entry) => entry.index === startIndex);
+
+        if (existing >= 0) {
+          ladderState.finalResults[existing] = { index: startIndex, name, result };
+        } else {
+          ladderState.finalResults.push({ index: startIndex, name, result });
+        }
+
+        ladderState.finalResults.sort((a, b) => a.index - b.index);
+        renderLadderResults();
+        if (onDone) onDone();
+      });
+    }
+
+    function runAllLadder() {
+      ladderState.finalResults = [];
+      ladderState.activeIndex = null;
+      ladderState.highlightSegments = [];
+      renderLadder();
+      renderLadderResults();
+
+      const indices = Array.from({ length: ladderState.count }, (_, i) => i);
+      let i = 0;
+
+      function next() {
+        if (i >= indices.length) return;
+        const idx = indices[i++];
+        runLadder(idx, () => setTimeout(next, 400));
+      }
+
+      next();
+    }
+
+    function resetLadder() {
+      ladderState.count = clamp(Number(ladderCountInput.value) || 2, 2, 12);
+      ladderCountInput.value = String(ladderState.count);
+      ensureLadderLists();
+      ladderState.rows = buildLadderRows(ladderState.count);
+      ladderState.activeIndex = null;
+      ladderState.highlightSegments = [];
+      ladderState.finalResults = [];
+      renderLadderInputs();
+      renderLadder();
+      renderLadderResults();
+    }
+
+    function createNameTag(name, tagColor) {
+      const tag = document.createElement("div");
+      tag.className = "name-tag";
+      tag.draggable = true;
+      tag.dataset.id = String(name.id);
+      if (tagColor) tag.style.background = tagColor;
+
+      const label = document.createElement("span");
+      label.textContent = name.label;
+
+      const del = document.createElement("button");
+      del.className = "name-tag-del";
+      del.textContent = "×";
+      del.title = "삭제";
+      del.addEventListener("click", (e) => {
+        e.stopPropagation();
+        teamState.names = teamState.names.filter((n) => n.id !== name.id);
+        renderTeams();
+      });
+
+      tag.append(label, del);
+
+      tag.addEventListener("dragstart", (event) => {
+        tag.classList.add("dragging");
+        event.dataTransfer?.setData("text/plain", String(name.id));
+      });
+
+      tag.addEventListener("dragend", () => {
+        tag.classList.remove("dragging");
+      });
+
+      return tag;
+    }
+
+    function copyTeamResults() {
+      const lines = teamState.teams.map((team) => {
+        const members = teamState.names
+          .filter((n) => n.teamId === team.id)
+          .map((n) => n.label);
+        return [team.name, ...members].join("\t");
+      });
+
+      const text = lines.join("\n");
+      const btn = document.querySelector("#team-copy-result");
+      const original = btn ? btn.textContent : "";
+      navigator.clipboard.writeText(text).then(() => {
+        if (!btn) return;
+        btn.textContent = "복사됨 ✓";
+        setTimeout(() => { btn.textContent = original; }, 1500);
+      }).catch(() => {});
+    }
+
+    function bindDropzones() {
+      document.querySelectorAll(".dropzone").forEach((zone) => {
+        // addEventListener 대신 직접 할당 → 중복 리스너 누적 방지
+        zone.ondragover = (event) => {
+          event.preventDefault();
+          zone.classList.add("over");
+        };
+
+        zone.ondragleave = () => {
+          zone.classList.remove("over");
+        };
+
+        zone.ondrop = (event) => {
+          event.preventDefault();
+          zone.classList.remove("over");
+          const id = Number(event.dataTransfer?.getData("text/plain"));
+          const teamId = zone.dataset.teamId ? Number(zone.dataset.teamId) : null;
+          moveNameToZone(id, teamId);
+        };
+      });
+    }
+
+    function moveNameToZone(id, teamId) {
+      const target = teamState.names.find((name) => name.id === id);
+      if (!target) {
+        return;
+      }
+      target.teamId = teamId;
+      playDropSound();
+      renderTeams();
+    }
+
+    function addName(label) {
+      const trimmed = label.trim();
+      if (!trimmed) {
+        return;
+      }
+
+      teamState.names.push({
+        id: teamState.nextId,
+        label: trimmed,
+        teamId: null,
+      });
+      teamState.nextId += 1;
+      teamNameInput.value = "";
+      renderTeams();
+    }
+
+    function addTeam() {
+      const nextId = teamState.teams.length ? Math.max(...teamState.teams.map((team) => team.id)) + 1 : 1;
+      teamState.teams.push({ id: nextId, name: `${teamState.teams.length + 1}팀` });
+      renderTeams();
+    }
+
+    function removeTeam() {
+      if (teamState.teams.length <= 1) {
+        return;
+      }
+
+      const removed = teamState.teams.pop();
+      teamState.names.forEach((name) => {
+        if (name.teamId === removed.id) {
+          name.teamId = null;
+        }
+      });
+      renderTeams();
+    }
+
+    function shuffleTeams() {
+      const teamIds = teamState.teams.map((team) => team.id);
+      const shuffled = [...teamState.names].sort(() => Math.random() - 0.5);
+      shuffled.forEach((name, index) => {
+        name.teamId = teamIds[index % teamIds.length] ?? null;
+      });
+      renderTeams();
+    }
+
+    function resetTeamNames() {
+      teamState.names.forEach((name) => {
+        name.teamId = null;
+      });
+      renderTeams();
+    }
+
+    function resetTeamAll() {
+      teamState.names = [];
+      teamState.nextId = 1;
+      teamState.teams = [
+        { id: 1, name: "1팀" },
+        { id: 2, name: "2팀" },
+      ];
+      renderTeams();
+    }
+
+    function renderTeams() {
+      nameBank.innerHTML = "";
+      teamGrid.innerHTML = "";
+
+      teamState.names
+        .filter((name) => name.teamId === null)
+        .forEach((name) => nameBank.appendChild(createNameTag(name)));
+
+      teamState.teams.forEach((team, teamIndex) => {
+        const color = TEAM_COLORS[teamIndex % TEAM_COLORS.length];
+        const members = teamState.names.filter((name) => name.teamId === team.id);
+        const card = document.createElement("div");
+        card.className = "team-card";
+        card.style.background = color.bg;
+        card.style.borderColor = color.border;
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = team.name;
+        input.placeholder = "팀 이름";
+        input.oninput = () => {
+          team.name = input.value.trim() || `팀 ${team.id}`;
+        };
+
+        const body = document.createElement("div");
+        body.className = "team-slot dropzone";
+        body.dataset.teamId = String(team.id);
+
+        members.forEach((member) => body.appendChild(createNameTag(member, color.tag)));
+        card.append(input, body);
+        teamGrid.appendChild(card);
+      });
+
+      bindDropzones();
+    }
+
+    function setupTabs() {
+      const buttons = document.querySelectorAll(".tab-button");
+      const panels = document.querySelectorAll(".tab-panel");
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          buttons.forEach((item) => item.classList.remove("active"));
+          panels.forEach((panel) => panel.classList.remove("active"));
+          button.classList.add("active");
+          document.querySelector(`#tab-${button.dataset.tabTarget}`)?.classList.add("active");
+        });
+      });
+    }
+
+    ladderCanvas.addEventListener("click", (event) => {
+      const rect = ladderCanvas.getBoundingClientRect();
+      const scaleX = ladderCanvas.width / rect.width;
+      const scaleY = ladderCanvas.height / rect.height;
+      const clickX = (event.clientX - rect.left) * scaleX;
+      const clickY = (event.clientY - rect.top) * scaleY;
+      const { paddingX, paddingY, spacing } = getLadderMetrics();
+
+      if (clickY < paddingY) {
+        let closestLane = 0;
+        let minDist = Infinity;
+        for (let lane = 0; lane < ladderState.count; lane += 1) {
+          const dist = Math.abs(clickX - (paddingX + spacing * lane));
+          if (dist < minDist) { minDist = dist; closestLane = lane; }
+        }
+        runLadder(closestLane);
+      }
+    });
+
+    document.querySelector("#ladder-count-up").addEventListener("click", () => {
+      ladderCountInput.value = String(clamp(Number(ladderCountInput.value) + 1, 2, 12));
+      resetLadder();
+    });
+
+    document.querySelector("#ladder-count-down").addEventListener("click", () => {
+      ladderCountInput.value = String(clamp(Number(ladderCountInput.value) - 1, 2, 12));
+      resetLadder();
+    });
+
+    document.querySelector("#ladder-generate").addEventListener("click", resetLadder);
+    document.querySelector("#ladder-clear-result").addEventListener("click", () => {
+      ladderState.finalResults = [];
+      renderLadderResults();
+    });
+    ladderCountInput.addEventListener("change", resetLadder);
+
+    document.querySelector("#team-name-add").addEventListener("click", () => addName(teamNameInput.value));
+    teamNameInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        addName(teamNameInput.value);
+      }
+    });
+
+
+    document.querySelector("#ladder-run-all").addEventListener("click", runAllLadder);
+    document.querySelector("#team-add").addEventListener("click", addTeam);
+    document.querySelector("#team-remove").addEventListener("click", removeTeam);
+    document.querySelector("#team-shuffle").addEventListener("click", shuffleTeams);
+    document.querySelector("#team-reset-names").addEventListener("click", resetTeamNames);
+    document.querySelector("#team-reset-all").addEventListener("click", resetTeamAll);
+    document.querySelector("#team-copy-result").addEventListener("click", copyTeamResults);
+
+    ["천양", "김웰로", "나나문", "달타", "마다옴", "모카", "문모모", "임하밍", "카푸", "캬앙", "파니", "한아밍"].forEach(addName);
+    setupTabs();
+    resetLadder();
+    renderTeams();
+
+    // ── 카드 뽑기 ──────────────────────────────────────
+    const cardMinInput  = document.querySelector("#card-min");
+    const cardMaxInput  = document.querySelector("#card-max");
+    const cardNumberEl  = document.querySelector("#card-number");
+    const cardSubEl     = document.querySelector("#card-sub");
+    const cardRemainEl  = document.querySelector("#card-remain");
+    const cardDrawBtn   = document.querySelector("#card-draw");
+    const cardLogList   = document.querySelector("#card-log-list");
+
+    const cardState = {
+      pool: [],
+      drawn: [],
+    };
+
+    function validateCardInputs() {
+      const minVal = cardMinInput.value.trim();
+      const maxVal = cardMaxInput.value.trim();
+      const min = parseInt(minVal, 10);
+      const max = parseInt(maxVal, 10);
+
+      cardMinInput.classList.remove("input-error");
+      cardMaxInput.classList.remove("input-error");
+      cardRemainEl.classList.remove("error");
+
+      if (minVal === "" || isNaN(min)) {
+        cardMinInput.classList.add("input-error");
+        cardRemainEl.classList.add("error");
+        cardRemainEl.textContent = "시작 숫자를 입력해주세요.";
+        return null;
+      }
+      if (maxVal === "" || isNaN(max)) {
+        cardMaxInput.classList.add("input-error");
+        cardRemainEl.classList.add("error");
+        cardRemainEl.textContent = "끝 숫자를 입력해주세요.";
+        return null;
+      }
+      if (min > max) {
+        cardMinInput.classList.add("input-error");
+        cardMaxInput.classList.add("input-error");
+        cardRemainEl.classList.add("error");
+        cardRemainEl.textContent = "시작 숫자가 끝 숫자보다 클 수 없습니다.";
+        return null;
+      }
+      if (max - min > 9999) {
+        cardMaxInput.classList.add("input-error");
+        cardRemainEl.classList.add("error");
+        cardRemainEl.textContent = "범위가 너무 큽니다. (최대 10,000개)";
+        return null;
+      }
+      // 소수점 입력 시 정수로 고정
+      cardMinInput.value = String(min);
+      cardMaxInput.value = String(max);
+      return { min, max };
+    }
+
+    function buildCardPool() {
+      const valid = validateCardInputs();
+      if (!valid) return false;
+      const { min, max } = valid;
+      cardState.pool = [];
+      for (let i = min; i <= max; i++) cardState.pool.push(i);
+      cardState.drawn = [];
+      return true;
+    }
+
+    function updateCardRemain() {
+      const remain = cardState.pool.length;
+      const total = cardState.pool.length + cardState.drawn.length;
+      cardRemainEl.classList.remove("error");
+      cardRemainEl.textContent = remain > 0
+        ? `남은 카드: ${remain} / ${total}`
+        : "모든 카드를 뽑았습니다!";
+      cardDrawBtn.disabled = remain === 0;
+    }
+
+    function resetCard() {
+      const ok = buildCardPool();
+      if (!ok) {
+        cardDrawBtn.disabled = true;
+        return;
+      }
+      cardNumberEl.className = "card-number empty";
+      cardNumberEl.textContent = "?";
+      cardSubEl.textContent = "버튼을 눌러 뽑기";
+      updateCardRemain();
+    }
+
+    function drawCard() {
+      if (cardState.pool.length === 0) return;
+      const idx = Math.floor(Math.random() * cardState.pool.length);
+      const num = cardState.pool.splice(idx, 1)[0];
+      cardState.drawn.push(num);
+
+      // 숫자 표시
+      cardNumberEl.className = "card-number";
+      cardNumberEl.textContent = String(num);
+      cardNumberEl.classList.add("pop");
+      setTimeout(() => cardNumberEl.classList.remove("pop"), 200);
+
+      cardSubEl.textContent = `${cardState.drawn.length}번째 뽑기`;
+
+      // 로그 추가
+      if (cardState.drawn.length === 1) cardLogList.innerHTML = "";
+      const item = document.createElement("div");
+      item.className = "card-log-item";
+      item.innerHTML = `<span class="card-log-order">${cardState.drawn.length}</span><span class="card-log-num">${num}</span>`;
+      cardLogList.prepend(item);
+
+      updateCardRemain();
+      playTone({ frequency: 520, duration: 0.1, type: "triangle", gain: 0.15, slideTo: 780 });
+    }
+
+    document.querySelector("#card-draw").addEventListener("click", drawCard);
+    document.querySelector("#card-reset").addEventListener("click", resetCard);
+    document.querySelector("#card-clear-log").addEventListener("click", () => {
+      cardLogList.innerHTML = `<div style="color:var(--muted);font-size:13px;">아직 뽑은 카드가 없습니다.</div>`;
+    });
+    [cardMinInput, cardMaxInput].forEach((el) => el.addEventListener("change", resetCard));
+
+    resetCard();
+
+    // ── 타이머/스톱워치/현재시간 ──────────────────────────────────────
+    const timerState = {
+      running: false,
+      paused: false,
+      remaining: 0,
+      total: 0,
+      alert10sEnabled: true,
+      alert5sEnabled: true,
+      alert10sActive: false,
+      alert5sActive: false,
+      alert10sLastTime: 0,
+      alert5sLastTime: 0,
+      animationFrameId: null,
+      startTime: 0,
+      finished: false,
+    };
+
+    const stopwatchState = {
+      running: false,
+      paused: false,
+      elapsed: 0,
+      pausedTime: 0,
+      startTime: 0,
+      records: [],
+      animationFrameId: null,
+    };
+
+    let currentTimeRafId = null;
+    function updateCurrentTime() {
+      const timeEl = document.querySelector("#current-time");
+      if (currentTimeRafId) cancelAnimationFrame(currentTimeRafId);
+      function update() {
+        const now = new Date();
+        const ms = String(now.getMilliseconds()).padStart(3, '0');
+        const sec = String(now.getSeconds()).padStart(2, '0');
+        const min = String(now.getMinutes()).padStart(2, '0');
+        const hour = String(now.getHours()).padStart(2, '0');
+        if (timeEl) timeEl.textContent = `${hour}:${min}:${sec}.${ms}`;
+        currentTimeRafId = requestAnimationFrame(update);
+      }
+      update();
+    }
+
+    function formatTimerDisplay(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function playAlert10s() {
+      // 10초 경고음: 부드럽고 낮은 톤
+      playTone({
+        frequency: 440,
+        duration: 0.2,
+        type: "triangle",
+        gain: 0.06
+      });
+    }
+
+    function playAlert5s() {
+      // 5초 경고음: 살짝 높지만 부드럽게
+      playTone({
+        frequency: 520,
+        duration: 0.15,
+        type: "triangle",
+        gain: 0.07
+      });
+    }
+
+
+    function playButtonClick() {
+      // 버튼 클릭음: 짧고 가벼운 톤
+      playTone({
+        frequency: 800,
+        duration: 0.05,
+        type: "sine",
+        gain: 0.06
+      });
+    }
+
+    function updateTimerDisplay() {
+      const timerDisplay = document.querySelector("#timer-display");
+      timerDisplay.textContent = formatTimerDisplay(timerState.remaining);
+
+      const now = Date.now();
+
+      // 10초~5초: 1초마다 한 번 울림
+      if (timerState.alert10sEnabled && timerState.remaining <= 10000 && timerState.remaining > 5000) {
+        if (now - timerState.alert10sLastTime >= 1000) {
+          playAlert10s();
+          timerState.alert10sLastTime = now;
+        }
+      }
+
+      // 5초 이하: 0.5초마다 울림
+      if (timerState.alert5sEnabled && timerState.remaining <= 5000 && timerState.remaining > 0) {
+        if (now - timerState.alert5sLastTime >= 500) {
+          playAlert5s();
+          timerState.alert5sLastTime = now;
+        }
+      }
+
+      if (timerState.remaining <= 0 && !timerState.finished) {
+        timerState.running = false;
+        timerState.remaining = 0;
+        timerState.paused = false;
+        timerState.finished = true;
+        // 종료음: 높은 음에서 낮은 음으로 쭈욱 내려가는 슬라이드
+        playTone({ frequency: 660, duration: 1.2, type: "triangle", gain: 0.08, slideTo: 180 });
+        document.querySelector("#timer-display").textContent = "종료!";
+        setTimeout(() => { resetTimerUI(); }, 2000);
+      }
+    }
+
+    function resetTimerUI() {
+      cancelAnimationFrame(timerState.animationFrameId);
+      timerState.animationFrameId = null;
+      timerState.running = false;
+      timerState.paused = false;
+      document.querySelector("#timer-input-section").style.display = "flex";
+      document.querySelector("#timer-quick-buttons").style.display = "grid";
+      document.querySelector("#timer-pause-resume").style.display = "none";
+      document.querySelector("#timer-stop").style.display = "none";
+      document.querySelector("#timer-hour-input").value = "0";
+      document.querySelector("#timer-min-input").value = "0";
+      document.querySelector("#timer-sec-input").value = "0";
+      document.querySelector("#timer-hour-input").disabled = false;
+      document.querySelector("#timer-min-input").disabled = false;
+      document.querySelector("#timer-sec-input").disabled = false;
+      document.querySelector("#timer-manual-btn").disabled = false;
+      document.querySelectorAll(".timer-quick-btn").forEach(btn => btn.disabled = true); // 시작 전 비활성
+      timerState.alert10sLastTime = 0;
+      timerState.alert5sLastTime = 0;
+      timerState.finished = false;
+      document.querySelector("#timer-display").textContent = "00:00:00";
+    }
+
+    function startTimer(ms) {
+      if (ms <= 0) return;
+      timerState.running = true;
+      timerState.paused = false;
+      timerState.remaining = ms;
+      timerState.total = ms;
+      timerState.alert10sLastTime = 0;
+      timerState.alert5sLastTime = 0;
+      timerState.startTime = Date.now();
+
+      // 입력 필드 비활성화 (하지만 계속 표시)
+      document.querySelector("#timer-hour-input").disabled = true;
+      document.querySelector("#timer-min-input").disabled = true;
+      document.querySelector("#timer-sec-input").disabled = true;
+      document.querySelector("#timer-manual-btn").disabled = true;
+      document.querySelectorAll(".timer-quick-btn").forEach(btn => btn.disabled = false); // 실행 중 활성화
+
+      document.querySelector("#timer-pause-resume").style.display = "inline-block";
+      document.querySelector("#timer-stop").style.display = "inline-block";
+
+      updateTimerDisplay();
+
+      function timerLoop() {
+        if (!timerState.running) return;
+
+        const now = Date.now();
+        const elapsed = now - timerState.startTime;
+        timerState.remaining = timerState.total - elapsed;
+
+        updateTimerDisplay();
+
+        if (timerState.remaining > 0) {
+          timerState.animationFrameId = requestAnimationFrame(timerLoop);
+        }
+      }
+
+      timerLoop();
+    }
+
+    function pauseTimer() {
+      timerState.paused = true;
+      timerState.running = false;
+      cancelAnimationFrame(timerState.animationFrameId);
+      document.querySelector("#timer-pause-resume").textContent = "계속";
+    }
+
+    function resumeTimer() {
+      if (!timerState.paused) return;
+      cancelAnimationFrame(timerState.animationFrameId); // 중복 루프 방지
+      timerState.paused = false;
+      timerState.startTime = Date.now() - (timerState.total - timerState.remaining);
+      timerState.running = true;
+      document.querySelector("#timer-pause-resume").textContent = "일시정지";
+
+      function timerLoop() {
+        if (!timerState.running) return;
+
+        const now = Date.now();
+        const elapsed = now - timerState.startTime;
+        timerState.remaining = timerState.total - elapsed;
+
+        updateTimerDisplay();
+
+        if (timerState.remaining > 0) {
+          timerState.animationFrameId = requestAnimationFrame(timerLoop);
+        }
+      }
+
+      timerLoop();
+    }
+
+    function updateStopwatchDisplay() {
+      const el = document.querySelector("#stopwatch-display");
+      const ms = stopwatchState.elapsed;
+      const totalSeconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      const milliseconds = ms % 1000;
+
+      const minStr = String(minutes).padStart(2, '0');
+      const secStr = String(seconds).padStart(2, '0');
+      const msStr = String(milliseconds).padStart(3, '0');
+
+      el.textContent = `${minStr}:${secStr}.${msStr}`;
+    }
+
+    function startStopwatch() {
+      stopwatchState.running = true;
+      stopwatchState.paused = false;
+      stopwatchState.startTime = Date.now() - stopwatchState.pausedTime;
+
+      document.querySelector("#stopwatch-start").style.display = "none";
+      document.querySelector("#stopwatch-pause").style.display = "inline-block";
+      document.querySelector("#stopwatch-record").style.display = "inline-block";
+
+      function stopwatchLoop() {
+        if (!stopwatchState.running) return;
+
+        stopwatchState.elapsed = Date.now() - stopwatchState.startTime;
+        updateStopwatchDisplay();
+        stopwatchState.animationFrameId = requestAnimationFrame(stopwatchLoop);
+      }
+
+      stopwatchLoop();
+    }
+
+    function pauseStopwatch() {
+      stopwatchState.running = false;
+      stopwatchState.paused = true;
+      stopwatchState.pausedTime = stopwatchState.elapsed;
+      document.querySelector("#stopwatch-pause").style.display = "none";
+      document.querySelector("#stopwatch-resume").style.display = "inline-block";
+      cancelAnimationFrame(stopwatchState.animationFrameId);
+      stopwatchState.animationFrameId = null;
+    }
+
+    function resumeStopwatch() {
+      cancelAnimationFrame(stopwatchState.animationFrameId); // 중복 루프 방지
+      stopwatchState.animationFrameId = null;
+      startStopwatch();
+      document.querySelector("#stopwatch-resume").style.display = "none";
+      document.querySelector("#stopwatch-pause").style.display = "inline-block";
+    }
+
+    function renderStopwatchLaps() {
+      const lapsContainer = document.querySelector("#stopwatch-laps");
+      if (stopwatchState.records.length === 0) {
+        lapsContainer.innerHTML = "";
+        return;
+      }
+
+      lapsContainer.innerHTML = stopwatchState.records
+        .map((rec) => {
+          const ms = rec.time;
+          const totalSeconds = Math.floor(ms / 1000);
+          const min = Math.floor(totalSeconds / 60);
+          const sec = totalSeconds % 60;
+          const msVal = ms % 1000;
+          const minStr = String(min).padStart(2, '0');
+          const secStr = String(sec).padStart(2, '0');
+          const msStr = String(msVal).padStart(3, '0');
+          return `<div class="stopwatch-lap"><span class="stopwatch-lap-label">Lap ${rec.lap}</span><span class="stopwatch-lap-time">${minStr}:${secStr}.${msStr}</span></div>`;
+        })
+        .join("");
+    }
+
+    function recordStopwatchLap() {
+      if (!stopwatchState.running && !stopwatchState.paused) return;
+      const lapTime = stopwatchState.elapsed;
+      const lapNum = stopwatchState.records.length + 1;
+      stopwatchState.records.push({ lap: lapNum, time: lapTime });
+      renderStopwatchLaps();
+    }
+
+    // 타이머 이벤트 리스너
+    document.querySelector("#timer-manual-btn").addEventListener("click", () => {
+      const hour = parseInt(document.querySelector("#timer-hour-input").value || "0", 10);
+      const min = parseInt(document.querySelector("#timer-min-input").value || "0", 10);
+      const sec = parseInt(document.querySelector("#timer-sec-input").value || "0", 10);
+
+      if (isNaN(hour) || isNaN(min) || isNaN(sec) || hour < 0 || hour > 99 || min < 0 || min >= 60 || sec < 0 || sec >= 60) {
+        alert("시(0~99) 분(0~59) 초(0~59) 범위로 입력해주세요.");
+        return;
+      }
+
+      const ms = (hour * 3600 + min * 60 + sec) * 1000;
+      if (ms <= 0) {
+        alert("0초 이상이어야 합니다.");
+        return;
+      }
+
+      playButtonClick();
+      startTimer(ms);
+    });
+
+    document.querySelectorAll(".timer-quick-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        if (!timerState.running) return;
+        const addSeconds = parseInt(e.target.dataset.add, 10);
+        timerState.remaining += addSeconds * 1000;
+        timerState.total += addSeconds * 1000;
+        playButtonClick();
+        updateTimerDisplay();
+      });
+    });
+
+    document.querySelector("#timer-pause-resume").addEventListener("click", () => {
+      playButtonClick();
+      if (!timerState.running && timerState.paused) {
+        resumeTimer();
+      } else if (timerState.running) {
+        pauseTimer();
+      }
+    });
+
+    document.querySelector("#timer-stop").addEventListener("click", () => {
+      playButtonClick();
+      timerState.running = false;
+      timerState.paused = false;
+      cancelAnimationFrame(timerState.animationFrameId);
+      resetTimerUI();
+    });
+
+    document.querySelector("#timer-alert-10s").addEventListener("change", (e) => {
+      timerState.alert10sEnabled = e.target.checked;
+    });
+
+    document.querySelector("#timer-alert-5s").addEventListener("change", (e) => {
+      timerState.alert5sEnabled = e.target.checked;
+    });
+
+    // 스톱워치 이벤트 리스너
+    document.querySelector("#stopwatch-start").addEventListener("click", () => {
+      playButtonClick();
+      startStopwatch();
+    });
+
+    document.querySelector("#stopwatch-pause").addEventListener("click", () => {
+      playButtonClick();
+      pauseStopwatch();
+    });
+
+    document.querySelector("#stopwatch-resume").addEventListener("click", () => {
+      playButtonClick();
+      resumeStopwatch();
+    });
+
+    document.querySelector("#stopwatch-stop").addEventListener("click", () => {
+      playButtonClick();
+      stopwatchState.running = false;
+      stopwatchState.paused = false;
+      stopwatchState.elapsed = 0;
+      stopwatchState.pausedTime = 0;
+      stopwatchState.records = [];
+      updateStopwatchDisplay();
+      renderStopwatchLaps();
+      document.querySelector("#stopwatch-start").style.display = "inline-block";
+      document.querySelector("#stopwatch-pause").style.display = "none";
+      document.querySelector("#stopwatch-resume").style.display = "none";
+      document.querySelector("#stopwatch-record").style.display = "none";
+      cancelAnimationFrame(stopwatchState.animationFrameId);
+      stopwatchState.animationFrameId = null;
+      stopwatchState.running = false;
+      stopwatchState.paused = false;
+    });
+
+    document.querySelector("#stopwatch-record").addEventListener("click", () => {
+      playButtonClick();
+      recordStopwatchLap();
+    });
+
+    // 초기화
+    updateCurrentTime();
+    resetTimerUI();
+    updateStopwatchDisplay();
+
+    // ── 핀볼 입력기 ──────────────────────────────────────
+    const pinballInputEl  = document.querySelector("#pinball-input");
+    const pinballErrorEl  = document.querySelector("#pinball-error");
+    const pinballListEl   = document.querySelector("#pinball-list");
+    const pinballSummaryEl = document.querySelector("#pinball-summary");
+    const pinballOutputEl = document.querySelector("#pinball-output");
+
+    const pinballState = { entries: [] }; // [{ name, count }]
+
+    function parsePinballToken(raw) {
+      const trimmed = raw.trim();
+      if (!trimmed) return { error: "양식에 맞게 입력해주세요. (이름 / 갯수)" };
+      const slashes = (trimmed.match(/\//g) || []).length;
+      if (slashes === 0) return { error: "슬래시(/)가 없습니다. 예: 바이오하자드 / 3" };
+      if (slashes > 1) return { error: "슬래시(/)는 하나만 사용해주세요." };
+      const [namePart, numPart] = trimmed.split("/");
+      const name = namePart.trim();
+      const count = parseInt(numPart.trim(), 10);
+      if (!name) return { error: "이름을 입력해주세요." };
+      if (numPart.trim() === "" || isNaN(count)) return { error: "갯수는 숫자로 입력해주세요." };
+      if (count < 1) return { error: "갯수는 1 이상이어야 합니다." };
+      if (count > 999) return { error: "갯수는 999 이하로 입력해주세요." };
+      return { name, count };
+    }
+
+    function showPinballError(msg) {
+      pinballErrorEl.textContent = msg;
+      pinballErrorEl.style.display = "";
+      pinballInputEl.style.borderColor = "rgba(220,50,50,0.6)";
+      pinballInputEl.style.boxShadow = "0 0 0 4px rgba(220,50,50,0.1)";
+    }
+
+    function hidePinballError() {
+      pinballErrorEl.style.display = "none";
+      pinballInputEl.style.borderColor = "";
+      pinballInputEl.style.boxShadow = "";
+    }
+
+    function renderPinballOutput() {
+      const { entries } = pinballState;
+      if (entries.length === 0) {
+        pinballSummaryEl.innerHTML = "";
+        pinballOutputEl.textContent = "아직 항목이 없습니다.";
+        pinballOutputEl.className = "pinball-output";
+        return;
+      }
+
+      const total = entries.reduce((s, e) => s + e.count, 0);
+      pinballSummaryEl.innerHTML =
+        entries.map(e => `<div class="pinball-summary-item">${e.name} <span style="color:var(--accent-strong)">${e.count}개</span></div>`).join("") +
+        `<div class="pinball-summary-item pinball-summary-total">합계 ${total}개</div>`;
+
+      const output = entries.map(e => `${e.name}*${e.count}`).join(",");
+      pinballOutputEl.textContent = output;
+      pinballOutputEl.className = "pinball-output has-data";
+    }
+
+    function renderPinballList() {
+      const { entries } = pinballState;
+      if (entries.length === 0) {
+        pinballListEl.innerHTML = `<div class="pinball-empty">항목을 입력하고 Enter를 누르세요.</div>`;
+        return;
+      }
+
+      pinballListEl.innerHTML = "";
+      entries.forEach((entry, idx) => {
+        const item = document.createElement("div");
+        item.className = "pinball-item";
+
+        const nameEl = document.createElement("div");
+        nameEl.className = "pinball-item-name";
+        nameEl.textContent = entry.name;
+
+        const countEl = document.createElement("div");
+        countEl.className = "pinball-item-count";
+        countEl.textContent = entry.count;
+
+        const btns = document.createElement("div");
+        btns.className = "pinball-item-btns";
+
+        const minusBtn = document.createElement("button");
+        minusBtn.textContent = "−";
+        minusBtn.onclick = () => {
+          entry.count -= 1;
+          if (entry.count <= 0) pinballState.entries.splice(idx, 1);
+          renderPinballList();
+          renderPinballOutput();
+          playTone({ frequency: 380, duration: 0.06, type: "triangle", gain: 0.1, slideTo: 280 });
+        };
+
+        const plusBtn = document.createElement("button");
+        plusBtn.textContent = "+";
+        plusBtn.onclick = () => {
+          if (entry.count < 999) entry.count += 1;
+          renderPinballList();
+          renderPinballOutput();
+          playTone({ frequency: 620, duration: 0.06, type: "triangle", gain: 0.1, slideTo: 780 });
+        };
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "×";
+        delBtn.className = "del-btn";
+        delBtn.onclick = () => {
+          pinballState.entries.splice(idx, 1);
+          renderPinballList();
+          renderPinballOutput();
+          playTone({ frequency: 300, duration: 0.1, type: "square", gain: 0.1, slideTo: 150 });
+        };
+
+        btns.append(minusBtn, plusBtn, delBtn);
+        item.append(nameEl, countEl, btns);
+        pinballListEl.appendChild(item);
+      });
+    }
+
+    pinballInputEl.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      const result = parsePinballToken(pinballInputEl.value);
+      if (result.error) { showPinballError(result.error); return; }
+      hidePinballError();
+      const existing = pinballState.entries.find(en => en.name === result.name);
+      if (existing) { existing.count += result.count; }
+      else { pinballState.entries.push({ name: result.name, count: result.count }); }
+      pinballInputEl.value = "";
+      renderPinballList();
+      renderPinballOutput();
+      playTone({ frequency: 520, duration: 0.08, type: "triangle", gain: 0.12, slideTo: 720 });
+    });
+
+    pinballInputEl.addEventListener("input", () => {
+      if (pinballInputEl.value === "") hidePinballError();
+    });
+
+    document.querySelector("#pinball-copy").addEventListener("click", () => {
+      if (!pinballState.entries.length) return;
+      const text = pinballOutputEl.textContent;
+      const btn = document.querySelector("#pinball-copy");
+      const original = btn ? btn.textContent : "";
+      navigator.clipboard.writeText(text).then(() => {
+        if (!btn) return;
+        btn.textContent = "복사됨 ✓";
+        setTimeout(() => { btn.textContent = original; }, 1500);
+      }).catch(() => {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.cssText = "position:fixed;opacity:0;";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        if (!btn) return;
+        btn.textContent = "복사됨 ✓";
+        setTimeout(() => { btn.textContent = original; }, 1500);
+      });
+    });
+
+    document.querySelector("#pinball-reset").addEventListener("click", () => {
+      if (!confirm("정말 모든 항목을 삭제하시겠습니까?")) return;
+      pinballState.entries = [];
+      pinballInputEl.value = "";
+      hidePinballError();
+      renderPinballList();
+      renderPinballOutput();
+    });
+
+  </script>
+
+  <!-- 설정 패널 전용 스크립트 (기존 스크립트 에러와 완전히 독립) -->
+  <script>
+    (function () {
+      // audioState fallback: 기존 스크립트가 에러나도 동작하도록
+      var audio = window.__appAudio || { volume: 0.5, muted: false };
+      if (!window.__appAudio) window.__appAudio = audio;
+
+      var modal     = document.getElementById("settings-modal");
+      var volEl     = document.getElementById("settings-volume");
+      var volText   = document.getElementById("settings-volume-text");
+      var soundOn   = document.getElementById("settings-sound-on");
+      var soundOff  = document.getElementById("settings-sound-off");
+      var closeBtn  = document.getElementById("settings-close");
+      var colorBtns = document.querySelectorAll(".settings-color-btn");
+
+      var BG = {
+        "default":      "linear-gradient(135deg, #ddfbff 0%, #effeff 46%, #edf8fb 100%), radial-gradient(circle at top left, rgba(39,199,217,0.24), transparent 25%), radial-gradient(circle at top right, rgba(16,159,202,0.22), transparent 24%)",
+        "dark":         "#2d3e50",
+        "light":        "#f8f9fa",
+        "pastel-blue":  "#e3f2fd",
+        "pastel-pink":  "#fce4ec",
+        "pastel-green": "#e8f5e9",
+      };
+
+      function lsSet(key, value) {
+        try { localStorage.setItem(key, value); } catch (e) {}
+      }
+      function lsGet(key) {
+        try { return localStorage.getItem(key); } catch (e) { return null; }
+      }
+
+      function applyBg(color) {
+        document.body.style.background = BG[color] || BG["default"];
+        lsSet("bgColor", color);
+        colorBtns.forEach(function (b) {
+          b.classList.toggle("active", b.dataset.color === color);
+        });
+      }
+
+      function setMuted(muted) {
+        audio.muted = muted;
+        soundOn.classList.toggle("active", !muted);
+        soundOff.classList.toggle("active", muted);
+        lsSet("muted", muted ? "true" : "false");
+      }
+
+      function setVolume(v) {
+        audio.volume = v / 100;
+        volEl.value  = v;
+        volText.textContent = v + "%";
+        lsSet("volume", v);
+      }
+
+      // 닫기
+      if (closeBtn) closeBtn.onclick = function () { modal.classList.remove("active"); };
+      if (modal)    modal.onclick    = function (e) { if (e.target === modal) modal.classList.remove("active"); };
+
+      // 음량 슬라이더
+      if (volEl) volEl.oninput = function () {
+        var v = parseInt(this.value, 10);
+        setVolume(v);
+        setMuted(false);
+      };
+
+      // 음소거 토글
+      if (soundOn)  soundOn.onclick  = function () { setMuted(false); };
+      if (soundOff) soundOff.onclick = function () { setMuted(true);  };
+
+      // 배경색
+      colorBtns.forEach(function (btn) {
+        btn.onclick = function () { applyBg(btn.dataset.color); };
+      });
+
+      // 초기 설정 불러오기
+      var savedVolume = parseInt(lsGet("volume") || "50", 10);
+      if (isNaN(savedVolume) || savedVolume < 0 || savedVolume > 200) savedVolume = 50;
+      var savedMuted  = lsGet("muted") === "true";
+      var savedBg     = lsGet("bgColor") || "default";
+
+      setVolume(savedVolume);
+      setMuted(savedMuted);
+      applyBg(savedBg);
+    })();
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    (function () {
+      var urlInput    = document.getElementById("qr-url-input");
+      var fgPicker    = document.getElementById("qr-fg-color");
+      var borderPicker= document.getElementById("qr-border-color");
+      var generateBtn = document.getElementById("qr-generate-btn");
+      var result      = document.getElementById("qr-result");
+      var canvasWrap  = document.getElementById("qr-canvas-wrap");
+      var copyBtn     = document.getElementById("qr-copy-btn");
+      var downloadBtn = document.getElementById("qr-download-btn");
+      var copyMsg     = document.getElementById("qr-copy-msg");
+
+      var qrInstance = null;
+      var PAD        = 20;  // 외곽선과 QR 사이 여백(px)
+      var BORDER_W   = 3;   // 외곽선 두께(px)
+      var RADIUS     = 16;  // 외곽선 라운드(px)
+      var QR_SIZE    = 240;
+
+      function roundRect(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.arcTo(x + w, y,     x + w, y + r,     r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+        ctx.lineTo(x + r, y + h);
+        ctx.arcTo(x,     y + h, x,     y + h - r, r);
+        ctx.lineTo(x, y + r);
+        ctx.arcTo(x, y,     x + r, y,             r);
+        ctx.closePath();
+      }
+
+      function drawFinal(qrCanvas) {
+        var margin = PAD + BORDER_W;       // 외곽선 두께 + 여백
+        var total  = QR_SIZE + margin * 2;
+        var out    = document.createElement("canvas");
+        out.width  = total;
+        out.height = total;
+        var ctx    = out.getContext("2d");
+
+        // 흰 배경
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, total, total);
+
+        // QR 이미지
+        ctx.drawImage(qrCanvas, margin, margin, QR_SIZE, QR_SIZE);
+
+        // 얇은 외곽선 (stroke) — QR 위에 그려서 안쪽 여백이 보임
+        ctx.strokeStyle = borderPicker.value;
+        ctx.lineWidth   = BORDER_W;
+        var half = BORDER_W / 2;
+        roundRect(ctx, half, half, total - BORDER_W, total - BORDER_W, RADIUS);
+        ctx.stroke();
+
+        canvasWrap.innerHTML = "";
+        out.style.boxShadow = "0 4px 20px rgba(22,50,64,0.15)";
+        canvasWrap.appendChild(out);
+      }
+
+      function generate() {
+        var url = urlInput.value.trim();
+        if (!url) { urlInput.focus(); return; }
+
+        // 임시 div에 QR 렌더링 후 canvas를 꺼내서 drawFinal 호출
+        var tmp = document.createElement("div");
+        tmp.style.position = "absolute";
+        tmp.style.visibility = "hidden";
+        document.body.appendChild(tmp);
+
+        qrInstance = new QRCode(tmp, {
+          text: url,
+          width: QR_SIZE,
+          height: QR_SIZE,
+          colorDark: fgPicker.value,
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H,
+        });
+
+        // QRCode.js는 동기적으로 canvas를 그리지만 이미지 생성은 약간 지연될 수 있음
+        setTimeout(function () {
+          var qrCanvas = tmp.querySelector("canvas");
+          if (qrCanvas) drawFinal(qrCanvas);
+          document.body.removeChild(tmp);
+          result.style.display = "flex";
+          copyMsg.textContent = "";
+        }, 50);
+      }
+
+      generateBtn.onclick = generate;
+
+      urlInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") generate();
+      });
+
+      // 색상 변경 시 자동 재생성
+      fgPicker.oninput    = function () { if (qrInstance) generate(); };
+      borderPicker.oninput= function () { if (qrInstance) generate(); };
+
+      function getFinalCanvas() {
+        return canvasWrap.querySelector("canvas");
+      }
+
+      copyBtn.onclick = function () {
+        var canvas = getFinalCanvas();
+        if (!canvas) return;
+        canvas.toBlob(function (blob) {
+          if (!blob) return;
+          try {
+            navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]).then(function () {
+              copyMsg.textContent = "클립보드에 복사됐어요 ✓";
+              setTimeout(function () { copyMsg.textContent = ""; }, 2000);
+            }).catch(function () {
+              copyMsg.textContent = "복사 실패 (브라우저 권한 필요)";
+            });
+          } catch (e) {
+            copyMsg.textContent = "이 브라우저는 이미지 복사를 지원하지 않아요";
+          }
+        });
+      };
+
+      downloadBtn.onclick = function () {
+        var canvas = getFinalCanvas();
+        if (!canvas) return;
+        var a = document.createElement("a");
+        a.href = canvas.toDataURL("image/png");
+        a.download = "qrcode.png";
+        a.click();
+      };
+    })();
+  </script>
+</body>
+</html>
