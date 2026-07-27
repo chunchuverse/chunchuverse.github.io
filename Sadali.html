@@ -36,7 +36,7 @@
     }
 
     .page-shell {
-      width: min(1120px, calc(100% - 24px));
+      width: min(1480px, calc(100% - 32px));
       margin: 0 auto;
       padding: 24px 0 36px;
     }
@@ -200,8 +200,8 @@
 
     .ladder-container {
       display: grid;
-      grid-template-columns: 1fr 280px;
-      gap: 16px;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 18px;
       margin-bottom: 16px;
     }
 
@@ -271,8 +271,41 @@
       align-content: flex-start;
     }
 
-    .name-bank {
+    .name-bank-panel {
       margin-bottom: 16px;
+    }
+
+    .name-bank-head,
+    .team-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .name-bank-title {
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .member-count {
+      flex: 0 0 auto;
+      min-width: 42px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(22, 50, 64, 0.08);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .name-bank {
+      margin-bottom: 0;
+      max-height: min(34vh, 320px);
+      overflow-y: auto;
     }
 
     .name-tag {
@@ -283,10 +316,10 @@
       min-width: 72px;
       padding: 10px 14px;
       border-radius: 999px;
-      background: linear-gradient(135deg, #1e91b2, #27c7d9);
+      background: linear-gradient(135deg, #6ba4b9, #8fc8d5);
       color: white;
       font-weight: 800;
-      box-shadow: 0 10px 18px rgba(16, 159, 202, 0.2);
+      box-shadow: 0 8px 16px rgba(65, 104, 118, 0.17);
       user-select: none;
     }
 
@@ -340,8 +373,8 @@
 
     .team-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
     }
 
     .team-card {
@@ -358,7 +391,18 @@
       background: rgba(255, 255, 255, 0.7);
     }
 
+    .team-card-head input {
+      flex: 1 1 auto;
+      min-width: 0;
+      margin-bottom: 0;
+    }
+
+    .team-card-head .member-count {
+      margin-left: auto;
+    }
+
     .team-reset-buttons {
+      margin-bottom: 16px;
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
@@ -376,7 +420,7 @@
 
     @media (max-width: 760px) {
       .page-shell {
-        width: min(100% - 16px, 1120px);
+        width: min(100% - 16px, 1480px);
         padding-top: 16px;
       }
 
@@ -415,15 +459,18 @@
 
     /* 카드 뽑기 */
     .card-layout {
-      display: grid;
-      grid-template-columns: 1fr 280px;
-      gap: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-height: clamp(620px, calc(100vh - 210px), 860px);
     }
 
     .card-main {
       display: flex;
+      flex: 1 1 auto;
       flex-direction: column;
-      gap: 16px;
+      gap: 18px;
+      min-height: 0;
     }
 
     .card-range-row {
@@ -448,18 +495,19 @@
 
     .card-display {
       display: flex;
+      flex: 1 1 auto;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 220px;
+      min-height: clamp(360px, 52vh, 620px);
       border-radius: 24px;
       border: 1px solid rgba(22, 50, 64, 0.08);
       background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(236,252,255,0.98));
-      gap: 10px;
+      gap: 16px;
     }
 
     .card-number {
-      font-size: 96px;
+      font-size: clamp(120px, 22vh, 240px);
       font-weight: 800;
       color: var(--ink);
       line-height: 1;
@@ -471,20 +519,20 @@
     }
 
     .card-number.empty {
-      font-size: 32px;
+      font-size: clamp(48px, 10vh, 96px);
       color: var(--muted);
       font-weight: 500;
     }
 
     .card-sub {
-      font-size: 14px;
+      font-size: clamp(15px, 2.2vh, 22px);
       color: var(--muted);
       font-weight: 600;
     }
 
     .card-draw-btn {
       width: 100%;
-      padding: 16px;
+      padding: clamp(18px, 2.6vh, 28px);
       border-radius: 18px;
       background: linear-gradient(135deg, var(--accent), var(--accent-strong));
       color: white;
@@ -515,9 +563,9 @@
       background: rgba(255, 255, 255, 0.72);
       border: 1px solid rgba(22, 50, 64, 0.08);
       display: flex;
+      flex: 0 0 auto;
       flex-direction: column;
       gap: 12px;
-      height: fit-content;
     }
 
     .card-log-head {
@@ -528,10 +576,10 @@
     }
 
     .card-log-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      max-height: 400px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 8px;
+      max-height: min(22vh, 220px);
       overflow-y: auto;
     }
 
@@ -574,9 +622,17 @@
       box-shadow: 0 0 0 4px rgba(220, 50, 50, 0.1);
     }
 
-    @media (max-width: 1024px) {
+    @media (max-width: 760px) {
       .card-layout {
-        grid-template-columns: 1fr;
+        min-height: calc(100vh - 160px);
+      }
+
+      .card-display {
+        min-height: clamp(320px, 48vh, 520px);
+      }
+
+      .card-log-list {
+        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
       }
     }
 
@@ -805,7 +861,8 @@
       margin-bottom: 2px;
       display: block;
     }
-    .qr-url-input {
+    .qr-url-input,
+    .qr-title-input {
       width: 100%;
       padding: 10px 14px;
       border-radius: 10px;
@@ -816,7 +873,8 @@
       outline: none;
       box-sizing: border-box;
     }
-    .qr-url-input:focus {
+    .qr-url-input:focus,
+    .qr-title-input:focus {
       border-color: rgba(22,50,64,0.4);
     }
     .qr-color-row {
@@ -1032,232 +1090,6 @@
       display: none;
     }
 
-    /* ── 유틸리티 (타이머/스톱워치/현재시간) ── */
-
-    .utils-card {
-      background: rgba(255, 255, 255, 0.94);
-      border: 1px solid rgba(22, 50, 64, 0.08);
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-
-    .utils-title {
-      font-size: 16px;
-      font-weight: 800;
-      color: var(--ink);
-      margin-bottom: 16px;
-    }
-
-    .utils-display,
-    .timer-display,
-    .stopwatch-display {
-      font-family: "Courier New", monospace;
-      font-size: 48px;
-      font-weight: 800;
-      color: var(--accent-strong);
-      text-align: center;
-      padding: 20px;
-      background: rgba(39, 199, 217, 0.08);
-      border-radius: 16px;
-      margin-bottom: 16px;
-      letter-spacing: 2px;
-      line-height: 1.2;
-    }
-
-    .timer-input-section {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-
-    .timer-input-fields {
-      display: flex;
-      gap: 6px;
-      flex: 1;
-      min-width: 0;
-    }
-
-    .timer-input-group {
-      flex: 1;
-      min-width: 60px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .timer-input-group label {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--muted);
-      text-align: center;
-    }
-
-    .timer-input-field {
-      width: 100%;
-      padding: 8px 6px;
-      border-radius: 10px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.96);
-      color: var(--ink);
-      font-size: 14px;
-      font-weight: 700;
-      text-align: center;
-      outline: none;
-    }
-
-    .timer-input-field:focus {
-      border-color: rgba(39, 199, 217, 0.55);
-      box-shadow: 0 0 0 3px rgba(39, 199, 217, 0.1);
-    }
-
-    .timer-input-section input.timer-input-field {
-      flex: 1;
-    }
-
-    .timer-btn-start,
-    .timer-btn,
-    .stopwatch-btn {
-      padding: 11px 16px;
-      border-radius: 12px;
-      border: none;
-      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-      color: white;
-      font-weight: 800;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .timer-btn-start {
-      flex: 0.8;
-    }
-
-    .timer-btn-start:hover,
-    .timer-btn:hover,
-    .stopwatch-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(16, 159, 202, 0.3);
-    }
-
-    .timer-quick-buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .timer-quick-btn {
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 1px solid rgba(22, 50, 64, 0.15);
-      background: rgba(22, 50, 64, 0.06);
-      color: var(--ink);
-      font-weight: 700;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .timer-quick-btn:hover {
-      background: rgba(22, 50, 64, 0.12);
-      border-color: var(--accent);
-    }
-
-    .timer-quick-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .timer-control {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .timer-control button {
-      flex: 1;
-    }
-
-    .timer-alert-toggle {
-      display: flex;
-      align-items: center;
-    }
-
-    .timer-alert-toggle label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--ink);
-    }
-
-    .timer-alert-toggle input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-    }
-
-    .stopwatch-control {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .stopwatch-control button {
-      flex: 1;
-    }
-
-    .stopwatch-records {
-      margin-bottom: 12px;
-    }
-
-    .stopwatch-records button {
-      width: 100%;
-    }
-
-    .stopwatch-laps {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .stopwatch-lap {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: rgba(22, 50, 64, 0.06);
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--ink);
-      font-family: "Courier New", monospace;
-    }
-
-    .stopwatch-lap-label {
-      color: var(--muted);
-    }
-
-    .stopwatch-lap-time {
-      color: var(--accent-strong);
-      font-weight: 800;
-    }
-
-    @media (max-width: 768px) {
-      .utils-display,
-      .timer-display,
-      .stopwatch-display {
-        font-size: 32px;
-      }
-
-      .timer-quick-buttons {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
   </style>
 </head>
 <body>
@@ -1268,7 +1100,6 @@
         <button class="tab-button" data-tab-target="teams">팀 나누기</button>
         <button class="tab-button" data-tab-target="card">카드 뽑기</button>
         <button class="tab-button" data-tab-target="pinball">핀볼 입력기</button>
-        <button class="tab-button" data-tab-target="utils">시계</button>
         <button class="tab-button" data-tab-target="qr">QR코드</button>
       </div>
       <button id="settings-open" class="settings-btn" title="설정" onclick="document.getElementById('settings-modal').classList.add('active'); return false;">⚙️</button>
@@ -1311,7 +1142,7 @@
         <div class="panel">
           <div class="panel-row teams-top">
             <div class="inline-form">
-              <input id="team-name-input" type="text" placeholder="이름 입력">
+              <input id="team-name-input" type="text" placeholder="이름 입력 / 쉼표로 여러 명 추가">
               <button id="team-name-add" type="button">추가</button>
             </div>
             <div class="team-actions">
@@ -1327,7 +1158,13 @@
             <button id="team-copy-result" class="ghost-button">결과 복사 📋</button>
           </div>
 
-          <div id="name-bank" class="name-bank dropzone"></div>
+          <div class="name-bank-panel">
+            <div class="name-bank-head">
+              <span class="name-bank-title">미선택</span>
+              <span id="name-bank-count" class="member-count">0명</span>
+            </div>
+            <div id="name-bank" class="name-bank dropzone"></div>
+          </div>
           <div id="team-grid" class="team-grid"></div>
         </div>
       </section>
@@ -1366,7 +1203,7 @@
           <div class="pinball-layout">
 
             <div class="pinball-left">
-              <input id="pinball-input" type="text" placeholder="이름 / 갯수  →  Enter로 추가">
+              <input id="pinball-input" type="text" placeholder="이름 또는 이름 / 갯수  →  Enter로 추가">
               <div id="pinball-error" class="pinball-error" style="display:none;"></div>
               <div id="pinball-list" class="pinball-list">
                 <div class="pinball-empty">항목을 입력하고 Enter를 누르세요.</div>
@@ -1389,84 +1226,6 @@
         </div>
       </section>
 
-      <section id="tab-utils" class="tab-panel">
-        <div class="panel">
-
-          <!-- 타이머 -->
-          <div class="utils-card">
-            <div class="utils-title">⏱️ 타이머</div>
-
-            <div class="timer-display" id="timer-display">00:00:00</div>
-
-            <div class="timer-input-section" id="timer-input-section">
-              <div class="timer-input-fields">
-                <div class="timer-input-group">
-                  <label>시</label>
-                  <input id="timer-hour-input" type="number" min="0" max="59" value="0" class="timer-input-field">
-                </div>
-                <div class="timer-input-group">
-                  <label>분</label>
-                  <input id="timer-min-input" type="number" min="0" max="59" value="0" class="timer-input-field">
-                </div>
-                <div class="timer-input-group">
-                  <label>초</label>
-                  <input id="timer-sec-input" type="number" min="0" max="59" value="0" class="timer-input-field">
-                </div>
-              </div>
-              <button id="timer-manual-btn" class="timer-btn-start">시작</button>
-            </div>
-
-            <div class="timer-quick-buttons" id="timer-quick-buttons">
-              <button class="timer-quick-btn" data-add="5">+5초</button>
-              <button class="timer-quick-btn" data-add="10">+10초</button>
-              <button class="timer-quick-btn" data-add="15">+15초</button>
-            </div>
-
-            <div class="timer-control">
-              <button id="timer-pause-resume" class="timer-btn" style="display:none;">일시정지</button>
-              <button id="timer-stop" class="timer-btn" style="display:none;">중지</button>
-            </div>
-
-            <div class="timer-alert-toggle">
-              <label>
-                <input id="timer-alert-10s" type="checkbox" checked>
-                <span>10초전 경고음</span>
-              </label>
-              <label>
-                <input id="timer-alert-5s" type="checkbox" checked>
-                <span>5초전 경고음</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- 스톱워치 -->
-          <div class="utils-card">
-            <div class="utils-title">⏰ 스톱워치</div>
-
-            <div class="stopwatch-display" id="stopwatch-display">00:00:00.000</div>
-
-            <div class="stopwatch-control">
-              <button id="stopwatch-start" class="stopwatch-btn">시작</button>
-              <button id="stopwatch-pause" class="stopwatch-btn" style="display:none;">일시정지</button>
-              <button id="stopwatch-resume" class="stopwatch-btn" style="display:none;">계속</button>
-              <button id="stopwatch-stop" class="stopwatch-btn">리셋</button>
-            </div>
-
-            <div class="stopwatch-records">
-              <button id="stopwatch-record" class="stopwatch-btn" style="display:none;">기록</button>
-            </div>
-
-            <div id="stopwatch-laps" class="stopwatch-laps"></div>
-          </div>
-
-          <!-- 현재시간 -->
-          <div class="utils-card">
-            <div class="utils-title">🕐 현재시간</div>
-            <div class="utils-display" id="current-time">00:00:00.000</div>
-          </div>
-
-        </div>
-      </section>
 
       <section id="tab-qr" class="tab-panel">
         <div class="panel">
@@ -1474,6 +1233,8 @@
             <div class="qr-inputs">
               <label class="qr-label">인터넷 주소 (URL)</label>
               <input id="qr-url-input" class="qr-url-input" type="url" placeholder="https://example.com" autocomplete="off" />
+              <label class="qr-label">하단 제목</label>
+              <input id="qr-title-input" class="qr-title-input" type="text" placeholder="비워두면 제목 없음" autocomplete="off" maxlength="24" />
               <div class="qr-color-row">
                 <div class="qr-color-group">
                   <label class="qr-label">QR 색상</label>
@@ -1482,6 +1243,10 @@
                 <div class="qr-color-group">
                   <label class="qr-label">외곽 띠 색상</label>
                   <input id="qr-border-color" type="color" class="qr-color-picker" value="#163240" />
+                </div>
+                <div class="qr-color-group">
+                  <label class="qr-label">글자 색상</label>
+                  <input id="qr-title-color" type="color" class="qr-color-picker" value="#163240" />
                 </div>
               </div>
               <button id="qr-generate-btn" class="action-btn">QR 생성</button>
@@ -1569,17 +1334,18 @@
       highlightSegments: [],
       finalResults: [],
       animationToken: 0,
+      runAllToken: 0,
     };
 
     const TEAM_COLORS = [
-      { bg: "rgba(39, 199, 217, 0.13)",  border: "rgba(39, 199, 217, 0.35)",  tag: "linear-gradient(135deg,#1e91b2,#27c7d9)" },
-      { bg: "rgba(72, 199, 116, 0.13)",  border: "rgba(72, 199, 116, 0.35)",  tag: "linear-gradient(135deg,#2a9d5c,#48c774)" },
-      { bg: "rgba(255, 159, 67, 0.13)",  border: "rgba(255, 159, 67, 0.35)",  tag: "linear-gradient(135deg,#e07b00,#ff9f43)" },
-      { bg: "rgba(168, 85, 247, 0.13)",  border: "rgba(168, 85, 247, 0.35)",  tag: "linear-gradient(135deg,#7c3aed,#a855f7)" },
-      { bg: "rgba(236, 72, 153, 0.13)",  border: "rgba(236, 72, 153, 0.35)",  tag: "linear-gradient(135deg,#be185d,#ec4899)" },
-      { bg: "rgba(234, 179, 8, 0.13)",   border: "rgba(234, 179, 8, 0.35)",   tag: "linear-gradient(135deg,#b45309,#eab308)" },
-      { bg: "rgba(239, 68, 68, 0.13)",   border: "rgba(239, 68, 68, 0.35)",   tag: "linear-gradient(135deg,#b91c1c,#ef4444)" },
-      { bg: "rgba(20, 184, 166, 0.13)",  border: "rgba(20, 184, 166, 0.35)",  tag: "linear-gradient(135deg,#0f766e,#14b8a6)" },
+      { bg: "rgba(107, 164, 185, 0.13)", border: "rgba(107, 164, 185, 0.30)", tag: "linear-gradient(135deg,#6ba4b9,#8fc8d5)" },
+      { bg: "rgba(118, 170, 133, 0.13)", border: "rgba(118, 170, 133, 0.30)", tag: "linear-gradient(135deg,#76aa85,#9ac8a5)" },
+      { bg: "rgba(205, 151, 91, 0.13)",  border: "rgba(205, 151, 91, 0.30)",  tag: "linear-gradient(135deg,#cd975b,#e0b77b)" },
+      { bg: "rgba(151, 124, 194, 0.13)", border: "rgba(151, 124, 194, 0.30)", tag: "linear-gradient(135deg,#977cc2,#b4a0d4)" },
+      { bg: "rgba(199, 121, 159, 0.13)", border: "rgba(199, 121, 159, 0.30)", tag: "linear-gradient(135deg,#c7799f,#dd9cb7)" },
+      { bg: "rgba(194, 163, 77, 0.13)",  border: "rgba(194, 163, 77, 0.30)",  tag: "linear-gradient(135deg,#c2a34d,#d8bf72)" },
+      { bg: "rgba(197, 111, 111, 0.13)", border: "rgba(197, 111, 111, 0.30)", tag: "linear-gradient(135deg,#c56f6f,#dc9292)" },
+      { bg: "rgba(99, 169, 160, 0.13)",  border: "rgba(99, 169, 160, 0.30)",  tag: "linear-gradient(135deg,#63a9a0,#89c8c0)" },
     ];
 
     const teamState = {
@@ -1661,41 +1427,70 @@
     }
 
     function buildLadderRows(count) {
-      const totalRows = 8 + count;
-      const rows = [];
+      const totalRows = clamp(16 + Math.floor(count * 0.2), 16, 18);
+      const rows = Array.from({ length: totalRows }, () => Array(count - 1).fill(null));
+      const directions = [-1, 0, 1];
+      const createBridge = () => ({ direction: directions[Math.floor(Math.random() * directions.length)] });
+      const countBridges = () => rows.reduce((sum, row) => sum + row.filter(Boolean).length, 0);
+      const columnHasBridge = (column) => rows.some((row) => Boolean(row[column]));
+      const laneHasBridge = (lane) => rows.some((row) => Boolean(row[lane] || row[lane - 1]));
+      const fixedBridgeCounts = { 6: 12, 7: 14, 8: 16, 9: 18, 10: 21, 11: 23, 12: 25 };
+      const randomBridgeRanges = { 2: [2, 3], 3: [4, 5], 4: [6, 7], 5: [8, 10] };
+      const bridgeRange = randomBridgeRanges[count];
+      const targetBridgeCount = bridgeRange
+        ? bridgeRange[0] + Math.floor(Math.random() * (bridgeRange[1] - bridgeRange[0] + 1))
+        : fixedBridgeCounts[count];
+      const getCandidates = (column) => rows
+        .map((row, rowIndex) => ({ row, rowIndex }))
+        .filter(({ row }) => !row[column] && !row[column - 1] && !row[column + 1]);
+      const placeBridge = (targetColumn, direction = null) => {
+        const column = clamp(targetColumn, 0, count - 2);
+        const candidates = getCandidates(column);
+        if (!candidates.length) return false;
+        const picked = candidates[Math.floor(Math.random() * candidates.length)];
+        picked.row[column] = direction === null ? createBridge() : { direction };
+        return true;
+      };
 
-      for (let rowIndex = 0; rowIndex < totalRows; rowIndex += 1) {
-        const row = Array(count - 1).fill(false);
-        for (let column = 0; column < count - 1; column += 1) {
-          if (row[column - 1]) {
-            continue;
-          }
-          row[column] = Math.random() > 0.58;
+      for (let column = 0; column < count - 1; column += 1) {
+        if (!columnHasBridge(column)) {
+          placeBridge(column);
         }
-        rows.push(row);
       }
 
-      if (count > 2) {
-        const leftColumnExists = rows.some((row) => row[0]);
-        const rightColumnExists = rows.some((row) => row[count - 2]);
-        if (!leftColumnExists) {
-          rows[Math.floor(Math.random() * rows.length)][0] = true;
-        }
-        if (!rightColumnExists) {
-          const rowIndex = Math.floor(Math.random() * rows.length);
-          rows[rowIndex][count - 2] = true;
-          if (count - 3 >= 0) {
-            rows[rowIndex][count - 3] = false;
-          }
+      for (let lane = 0; lane < count; lane += 1) {
+        if (!laneHasBridge(lane)) {
+          placeBridge(lane === count - 1 ? lane - 1 : lane);
         }
       }
 
-      const totalBridges = rows.reduce((sum, row) => sum + row.filter(Boolean).length, 0);
-      if (totalBridges < 2) {
-        rows[1][0] = true;
-        if (count - 2 >= 1) {
-          rows[rows.length - 2][count - 2] = true;
+      let guard = 0;
+      while (guard < count * totalRows) {
+        const missingColumn = Array.from({ length: count - 1 }, (_, column) => column).find((column) => !columnHasBridge(column));
+        const missingLane = Array.from({ length: count }, (_, lane) => lane).find((lane) => !laneHasBridge(lane));
+        if (missingColumn === undefined && missingLane === undefined) {
+          break;
         }
+        placeBridge(missingColumn !== undefined ? missingColumn : (missingLane === count - 1 ? missingLane - 1 : missingLane));
+        guard += 1;
+      }
+
+      guard = 0;
+      while (countBridges() < targetBridgeCount && guard < count * totalRows) {
+        placeBridge(Math.floor(Math.random() * (count - 1)));
+        guard += 1;
+      }
+
+      const bridgeCells = [];
+      rows.forEach((row) => {
+        row.forEach((bridge) => {
+          if (bridge) bridgeCells.push(bridge);
+        });
+      });
+      if (bridgeCells.length >= 3) {
+        bridgeCells[0].direction = -1;
+        bridgeCells[Math.floor(bridgeCells.length / 2)].direction = 0;
+        bridgeCells[bridgeCells.length - 1].direction = 1;
       }
 
       return rows;
@@ -1704,42 +1499,71 @@
     function getLadderMetrics() {
       const canvas = ladderCanvas;
       const ctx = canvas.getContext("2d");
-      const width = canvas.width;
-      const height = canvas.height;
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const width = rect.width || canvas.width;
+      const height = rect.height || canvas.height;
+      const pixelWidth = Math.round(width * dpr);
+      const pixelHeight = Math.round(height * dpr);
+      if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+        canvas.width = pixelWidth;
+        canvas.height = pixelHeight;
+      }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const paddingX = 50;
-      const paddingTop = 36;
-      const paddingBottom = 56;
       const spacing = ladderState.count > 1 ? (width - paddingX * 2) / (ladderState.count - 1) : 0;
+      const textSize = getLadderTextSize(spacing);
+      const paddingTop = Math.max(44, textSize + 26);
+      const paddingBottom = Math.max(58, textSize + 42);
       const rowGap = (height - paddingTop - paddingBottom) / ((ladderState.rows.length || 1) + 1);
-      return { ctx, width, height, paddingX, paddingY: paddingTop, paddingBottom, spacing, rowGap };
+      return { ctx, width, height, paddingX, paddingY: paddingTop, paddingBottom, spacing, rowGap, textSize };
+    }
+
+    function getBridgeEndpointYs(bridgeY, diagonalOffset, bridge) {
+      if (bridge.direction === 0) {
+        return { leftY: bridgeY, rightY: bridgeY };
+      }
+      if (bridge.direction === -1) {
+        return { leftY: bridgeY + diagonalOffset, rightY: bridgeY - diagonalOffset };
+      }
+      return { leftY: bridgeY - diagonalOffset, rightY: bridgeY + diagonalOffset };
     }
 
     function traceLadder(startIndex) {
       const { paddingX, paddingY, paddingBottom, height, spacing, rowGap } = getLadderMetrics();
+      const diagonalOffset = Math.max(4, Math.min(rowGap * 0.32, 18));
       let lane = startIndex;
       let x = paddingX + spacing * lane;
       let y = paddingY;
       const segments = [];
 
       ladderState.rows.forEach((row, rowIndex) => {
-        const nextY = paddingY + rowGap * (rowIndex + 1);
-        segments.push({ x1: x, y1: y, x2: x, y2: nextY });
-        y = nextY;
+        const bridgeY = paddingY + rowGap * (rowIndex + 1);
+        const rightBridge = row[lane];
+        const leftBridge = lane > 0 ? row[lane - 1] : null;
 
-        if (row[lane]) {
+        if (rightBridge) {
           const nextX = paddingX + spacing * (lane + 1);
-          segments.push({ x1: x, y1: y, x2: nextX, y2: y });
+          const { leftY, rightY } = getBridgeEndpointYs(bridgeY, diagonalOffset, rightBridge);
+          segments.push({ x1: x, y1: y, x2: x, y2: leftY });
+          segments.push({ x1: x, y1: leftY, x2: nextX, y2: rightY });
           lane += 1;
           x = nextX;
-        } else if (lane > 0 && row[lane - 1]) {
+          y = rightY;
+        } else if (leftBridge) {
           const nextX = paddingX + spacing * (lane - 1);
-          segments.push({ x1: x, y1: y, x2: nextX, y2: y });
+          const { leftY, rightY } = getBridgeEndpointYs(bridgeY, diagonalOffset, leftBridge);
+          segments.push({ x1: x, y1: y, x2: x, y2: rightY });
+          segments.push({ x1: x, y1: rightY, x2: nextX, y2: leftY });
           lane -= 1;
           x = nextX;
+          y = leftY;
+        } else {
+          segments.push({ x1: x, y1: y, x2: x, y2: bridgeY });
+          y = bridgeY;
         }
       });
 
-      // 마지막 가로 다리 아래 세로선까지 연장
       const endY = height - paddingBottom;
       segments.push({ x1: x, y1: y, x2: x, y2: endY });
 
@@ -1822,23 +1646,39 @@
       });
     }
 
+    function getLadderTextSize(spacing) {
+      const sizeByCount = 26 - ladderState.count;
+      const sizeBySpacing = Math.floor(spacing * 0.28);
+      return clamp(Math.min(sizeByCount, sizeBySpacing), 13, 22);
+    }
+
+    function drawLadderText(ctx, text, x, y, maxWidth, baseSize, color) {
+      let size = baseSize;
+      ctx.fillStyle = color;
+      ctx.font = `800 ${size}px SUIT, sans-serif`;
+      while (size > 11 && ctx.measureText(text).width > maxWidth) {
+        size -= 1;
+        ctx.font = `800 ${size}px SUIT, sans-serif`;
+      }
+      ctx.fillText(text, x, y);
+    }
+
     function renderLadder() {
-      const { ctx, width, height, paddingX, paddingY, paddingBottom, spacing, rowGap } = getLadderMetrics();
+      const { ctx, width, height, paddingX, paddingY, paddingBottom, spacing, rowGap, textSize } = getLadderMetrics();
+      const diagonalOffset = Math.max(4, Math.min(rowGap * 0.32, 18));
       ctx.clearRect(0, 0, width, height);
       ctx.lineCap = "round";
-
-      // 이름 텍스트 (사다리 시작 라인 바로 위)
-      ctx.font = "bold 14px SUIT, sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
+
+      const textMaxWidth = Math.max(34, spacing - 14);
       for (let lane = 0; lane < ladderState.count; lane += 1) {
         const x = paddingX + spacing * lane;
-        const name = ladderState.names[lane] || `이름 ${lane + 1}`;
-        ctx.fillStyle = ladderState.activeIndex === lane ? "#FF0000" : "#163240";
-        ctx.fillText(name, x, paddingY / 2);
+        const name = ladderState.names[lane] || `?? ${lane + 1}`;
+        const color = ladderState.activeIndex === lane ? "#FF0000" : "#163240";
+        drawLadderText(ctx, name, x, paddingY / 2, textMaxWidth, textSize, color);
       }
 
-      // 세로선
       for (let lane = 0; lane < ladderState.count; lane += 1) {
         const x = paddingX + spacing * lane;
         ctx.beginPath();
@@ -1849,23 +1689,22 @@
         ctx.stroke();
       }
 
-      // 가로 다리
       ladderState.rows.forEach((row, rowIndex) => {
-        const y = paddingY + rowGap * (rowIndex + 1);
-        row.forEach((hasBridge, column) => {
-          if (!hasBridge) return;
+        const bridgeY = paddingY + rowGap * (rowIndex + 1);
+        row.forEach((bridge, column) => {
+          if (!bridge) return;
           const startX = paddingX + spacing * column;
           const endX = paddingX + spacing * (column + 1);
+          const { leftY, rightY } = getBridgeEndpointYs(bridgeY, diagonalOffset, bridge);
           ctx.beginPath();
-          ctx.strokeStyle = "#16b8d4";
+          ctx.strokeStyle = bridge.direction === 0 ? "#23a8c7" : "#16b8d4";
           ctx.lineWidth = 6;
-          ctx.moveTo(startX, y);
-          ctx.lineTo(endX, y);
+          ctx.moveTo(startX, leftY);
+          ctx.lineTo(endX, rightY);
           ctx.stroke();
         });
       });
 
-      // 하이라이트 경로
       ladderState.highlightSegments.forEach((segment, index) => {
         ctx.beginPath();
         ctx.strokeStyle = index === ladderState.highlightSegments.length - 1 ? "#FF0000" : "#FF6666";
@@ -1875,21 +1714,25 @@
         ctx.stroke();
       });
 
-      // 결과 텍스트 (사다리 끝 라인 바로 아래)
-      ctx.font = "bold 14px SUIT, sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
       for (let lane = 0; lane < ladderState.count; lane += 1) {
         const x = paddingX + spacing * lane;
-        const result = ladderState.results[lane] || `결과 ${lane + 1}`;
-        ctx.fillStyle = "#163240";
-        ctx.fillText(result, x, height - paddingBottom / 2);
+        const result = ladderState.results[lane] || `?? ${lane + 1}`;
+        drawLadderText(ctx, result, x, height - paddingBottom / 2, textMaxWidth, textSize, "#163240");
       }
+    }
+
+    function getLadderStepDelay() {
+      return clamp(120 - ladderState.count * 7, 38, 105);
+    }
+
+    function getLadderRunPause() {
+      return clamp(520 - ladderState.count * 32, 110, 420);
     }
 
     function animateLadderPath(segments, onComplete) {
       ladderState.animationToken += 1;
       const token = ladderState.animationToken;
+      const stepDelay = getLadderStepDelay();
       ladderState.highlightSegments = [];
       renderLadder();
       let index = 0;
@@ -1908,7 +1751,7 @@
           clearInterval(timer);
           if (onComplete) onComplete();
         }
-      }, 100);
+      }, stepDelay);
     }
 
     function runLadder(startIndex, onDone) {
@@ -1935,6 +1778,8 @@
     }
 
     function runAllLadder() {
+      ladderState.runAllToken += 1;
+      const runToken = ladderState.runAllToken;
       ladderState.finalResults = [];
       ladderState.activeIndex = null;
       ladderState.highlightSegments = [];
@@ -1945,15 +1790,21 @@
       let i = 0;
 
       function next() {
+        if (runToken !== ladderState.runAllToken) return;
         if (i >= indices.length) return;
         const idx = indices[i++];
-        runLadder(idx, () => setTimeout(next, 400));
+        runLadder(idx, () => {
+          if (runToken !== ladderState.runAllToken) return;
+          setTimeout(next, getLadderRunPause());
+        });
       }
 
       next();
     }
 
     function resetLadder() {
+      ladderState.runAllToken += 1;
+      ladderState.animationToken += 1;
       ladderState.count = clamp(Number(ladderCountInput.value) || 2, 2, 12);
       ladderCountInput.value = String(ladderState.count);
       ensureLadderLists();
@@ -1979,10 +1830,14 @@
       const del = document.createElement("button");
       del.className = "name-tag-del";
       del.textContent = "×";
-      del.title = "삭제";
+      del.title = name.teamId === null ? "삭제" : "미배정으로 이동";
       del.addEventListener("click", (e) => {
         e.stopPropagation();
-        teamState.names = teamState.names.filter((n) => n.id !== name.id);
+        if (name.teamId !== null) {
+          name.teamId = null;
+        } else {
+          teamState.names = teamState.names.filter((n) => n.id !== name.id);
+        }
         renderTeams();
       });
 
@@ -2050,20 +1905,32 @@
       renderTeams();
     }
 
-    function addName(label) {
-      const trimmed = label.trim();
-      if (!trimmed) {
-        return;
-      }
+    function parseTeamNames(value) {
+      return value
+        .split(/[,\n\r]+/)
+        .map((name) => name.trim())
+        .filter(Boolean);
+    }
 
-      teamState.names.push({
-        id: teamState.nextId,
-        label: trimmed,
-        teamId: null,
+    function addNames(value) {
+      const labels = parseTeamNames(value);
+      if (!labels.length) return;
+
+      labels.forEach((label) => {
+        teamState.names.push({
+          id: teamState.nextId,
+          label,
+          teamId: null,
+        });
+        teamState.nextId += 1;
       });
-      teamState.nextId += 1;
+
       teamNameInput.value = "";
       renderTeams();
+    }
+
+    function addName(label) {
+      addNames(label);
     }
 
     function addTeam() {
@@ -2103,6 +1970,7 @@
     }
 
     function resetTeamAll() {
+      if (!confirm("전체 리셋을 하면 모든 이름과 팀 구성이 삭제됩니다. 계속할까요?")) return;
       teamState.names = [];
       teamState.nextId = 1;
       teamState.teams = [
@@ -2116,9 +1984,12 @@
       nameBank.innerHTML = "";
       teamGrid.innerHTML = "";
 
-      teamState.names
-        .filter((name) => name.teamId === null)
-        .forEach((name) => nameBank.appendChild(createNameTag(name)));
+      const unassigned = teamState.names.filter((name) => name.teamId === null);
+      const nameBankCount = document.querySelector("#name-bank-count");
+      if (nameBankCount) {
+        nameBankCount.textContent = `${unassigned.length}명`;
+      }
+      unassigned.forEach((name) => nameBank.appendChild(createNameTag(name)));
 
       teamState.teams.forEach((team, teamIndex) => {
         const color = TEAM_COLORS[teamIndex % TEAM_COLORS.length];
@@ -2128,20 +1999,28 @@
         card.style.background = color.bg;
         card.style.borderColor = color.border;
 
+        const head = document.createElement("div");
+        head.className = "team-card-head";
+
         const input = document.createElement("input");
         input.type = "text";
         input.value = team.name;
         input.placeholder = "팀 이름";
         input.oninput = () => {
-          team.name = input.value.trim() || `팀 ${team.id}`;
+          team.name = input.value.trim() || `${team.id}팀`;
         };
+
+        const count = document.createElement("span");
+        count.className = "member-count";
+        count.textContent = `${members.length}명`;
+        head.append(input, count);
 
         const body = document.createElement("div");
         body.className = "team-slot dropzone";
         body.dataset.teamId = String(team.id);
 
         members.forEach((member) => body.appendChild(createNameTag(member, color.tag)));
-        card.append(input, body);
+        card.append(head, body);
         teamGrid.appendChild(card);
       });
 
@@ -2164,10 +2043,8 @@
 
     ladderCanvas.addEventListener("click", (event) => {
       const rect = ladderCanvas.getBoundingClientRect();
-      const scaleX = ladderCanvas.width / rect.width;
-      const scaleY = ladderCanvas.height / rect.height;
-      const clickX = (event.clientX - rect.left) * scaleX;
-      const clickY = (event.clientY - rect.top) * scaleY;
+      const clickX = event.clientX - rect.left;
+      const clickY = event.clientY - rect.top;
       const { paddingX, paddingY, spacing } = getLadderMetrics();
 
       if (clickY < paddingY) {
@@ -2198,12 +2075,19 @@
     });
     ladderCountInput.addEventListener("change", resetLadder);
 
-    document.querySelector("#team-name-add").addEventListener("click", () => addName(teamNameInput.value));
+    document.querySelector("#team-name-add").addEventListener("click", () => addNames(teamNameInput.value));
     teamNameInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
-        addName(teamNameInput.value);
+        addNames(teamNameInput.value);
       }
+    });
+
+    teamNameInput.addEventListener("paste", (event) => {
+      const text = event.clipboardData?.getData("text/plain") || "";
+      if (parseTeamNames(text).length <= 1) return;
+      event.preventDefault();
+      addNames(text);
     });
 
 
@@ -2215,7 +2099,7 @@
     document.querySelector("#team-reset-all").addEventListener("click", resetTeamAll);
     document.querySelector("#team-copy-result").addEventListener("click", copyTeamResults);
 
-    ["천양", "김웰로", "나나문", "달타", "마다옴", "모카", "문모모", "임하밍", "카푸", "캬앙", "파니", "한아밍"].forEach(addName);
+    ["천양","김웰로","나나문","달타","마다옴","모카","문모모","임하밍","카푸","캬앙","플리","체비"].forEach(addName);
     setupTabs();
     resetLadder();
     renderTeams();
@@ -2341,402 +2225,7 @@
 
     resetCard();
 
-    // ── 타이머/스톱워치/현재시간 ──────────────────────────────────────
-    const timerState = {
-      running: false,
-      paused: false,
-      remaining: 0,
-      total: 0,
-      alert10sEnabled: true,
-      alert5sEnabled: true,
-      alert10sActive: false,
-      alert5sActive: false,
-      alert10sLastTime: 0,
-      alert5sLastTime: 0,
-      animationFrameId: null,
-      startTime: 0,
-      finished: false,
-    };
 
-    const stopwatchState = {
-      running: false,
-      paused: false,
-      elapsed: 0,
-      pausedTime: 0,
-      startTime: 0,
-      records: [],
-      animationFrameId: null,
-    };
-
-    let currentTimeRafId = null;
-    function updateCurrentTime() {
-      const timeEl = document.querySelector("#current-time");
-      if (currentTimeRafId) cancelAnimationFrame(currentTimeRafId);
-      function update() {
-        const now = new Date();
-        const ms = String(now.getMilliseconds()).padStart(3, '0');
-        const sec = String(now.getSeconds()).padStart(2, '0');
-        const min = String(now.getMinutes()).padStart(2, '0');
-        const hour = String(now.getHours()).padStart(2, '0');
-        if (timeEl) timeEl.textContent = `${hour}:${min}:${sec}.${ms}`;
-        currentTimeRafId = requestAnimationFrame(update);
-      }
-      update();
-    }
-
-    function formatTimerDisplay(ms) {
-      const totalSeconds = Math.floor(ms / 1000);
-      const hours = Math.floor(totalSeconds / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
-
-    function playAlert10s() {
-      // 10초 경고음: 부드럽고 낮은 톤
-      playTone({
-        frequency: 440,
-        duration: 0.2,
-        type: "triangle",
-        gain: 0.06
-      });
-    }
-
-    function playAlert5s() {
-      // 5초 경고음: 살짝 높지만 부드럽게
-      playTone({
-        frequency: 520,
-        duration: 0.15,
-        type: "triangle",
-        gain: 0.07
-      });
-    }
-
-
-    function playButtonClick() {
-      // 버튼 클릭음: 짧고 가벼운 톤
-      playTone({
-        frequency: 800,
-        duration: 0.05,
-        type: "sine",
-        gain: 0.06
-      });
-    }
-
-    function updateTimerDisplay() {
-      const timerDisplay = document.querySelector("#timer-display");
-      timerDisplay.textContent = formatTimerDisplay(timerState.remaining);
-
-      const now = Date.now();
-
-      // 10초~5초: 1초마다 한 번 울림
-      if (timerState.alert10sEnabled && timerState.remaining <= 10000 && timerState.remaining > 5000) {
-        if (now - timerState.alert10sLastTime >= 1000) {
-          playAlert10s();
-          timerState.alert10sLastTime = now;
-        }
-      }
-
-      // 5초 이하: 0.5초마다 울림
-      if (timerState.alert5sEnabled && timerState.remaining <= 5000 && timerState.remaining > 0) {
-        if (now - timerState.alert5sLastTime >= 500) {
-          playAlert5s();
-          timerState.alert5sLastTime = now;
-        }
-      }
-
-      if (timerState.remaining <= 0 && !timerState.finished) {
-        timerState.running = false;
-        timerState.remaining = 0;
-        timerState.paused = false;
-        timerState.finished = true;
-        // 종료음: 높은 음에서 낮은 음으로 쭈욱 내려가는 슬라이드
-        playTone({ frequency: 660, duration: 1.2, type: "triangle", gain: 0.08, slideTo: 180 });
-        document.querySelector("#timer-display").textContent = "종료!";
-        setTimeout(() => { resetTimerUI(); }, 2000);
-      }
-    }
-
-    function resetTimerUI() {
-      cancelAnimationFrame(timerState.animationFrameId);
-      timerState.animationFrameId = null;
-      timerState.running = false;
-      timerState.paused = false;
-      document.querySelector("#timer-input-section").style.display = "flex";
-      document.querySelector("#timer-quick-buttons").style.display = "grid";
-      document.querySelector("#timer-pause-resume").style.display = "none";
-      document.querySelector("#timer-stop").style.display = "none";
-      document.querySelector("#timer-hour-input").value = "0";
-      document.querySelector("#timer-min-input").value = "0";
-      document.querySelector("#timer-sec-input").value = "0";
-      document.querySelector("#timer-hour-input").disabled = false;
-      document.querySelector("#timer-min-input").disabled = false;
-      document.querySelector("#timer-sec-input").disabled = false;
-      document.querySelector("#timer-manual-btn").disabled = false;
-      document.querySelectorAll(".timer-quick-btn").forEach(btn => btn.disabled = true); // 시작 전 비활성
-      timerState.alert10sLastTime = 0;
-      timerState.alert5sLastTime = 0;
-      timerState.finished = false;
-      document.querySelector("#timer-display").textContent = "00:00:00";
-    }
-
-    function startTimer(ms) {
-      if (ms <= 0) return;
-      timerState.running = true;
-      timerState.paused = false;
-      timerState.remaining = ms;
-      timerState.total = ms;
-      timerState.alert10sLastTime = 0;
-      timerState.alert5sLastTime = 0;
-      timerState.startTime = Date.now();
-
-      // 입력 필드 비활성화 (하지만 계속 표시)
-      document.querySelector("#timer-hour-input").disabled = true;
-      document.querySelector("#timer-min-input").disabled = true;
-      document.querySelector("#timer-sec-input").disabled = true;
-      document.querySelector("#timer-manual-btn").disabled = true;
-      document.querySelectorAll(".timer-quick-btn").forEach(btn => btn.disabled = false); // 실행 중 활성화
-
-      document.querySelector("#timer-pause-resume").style.display = "inline-block";
-      document.querySelector("#timer-stop").style.display = "inline-block";
-
-      updateTimerDisplay();
-
-      function timerLoop() {
-        if (!timerState.running) return;
-
-        const now = Date.now();
-        const elapsed = now - timerState.startTime;
-        timerState.remaining = timerState.total - elapsed;
-
-        updateTimerDisplay();
-
-        if (timerState.remaining > 0) {
-          timerState.animationFrameId = requestAnimationFrame(timerLoop);
-        }
-      }
-
-      timerLoop();
-    }
-
-    function pauseTimer() {
-      timerState.paused = true;
-      timerState.running = false;
-      cancelAnimationFrame(timerState.animationFrameId);
-      document.querySelector("#timer-pause-resume").textContent = "계속";
-    }
-
-    function resumeTimer() {
-      if (!timerState.paused) return;
-      cancelAnimationFrame(timerState.animationFrameId); // 중복 루프 방지
-      timerState.paused = false;
-      timerState.startTime = Date.now() - (timerState.total - timerState.remaining);
-      timerState.running = true;
-      document.querySelector("#timer-pause-resume").textContent = "일시정지";
-
-      function timerLoop() {
-        if (!timerState.running) return;
-
-        const now = Date.now();
-        const elapsed = now - timerState.startTime;
-        timerState.remaining = timerState.total - elapsed;
-
-        updateTimerDisplay();
-
-        if (timerState.remaining > 0) {
-          timerState.animationFrameId = requestAnimationFrame(timerLoop);
-        }
-      }
-
-      timerLoop();
-    }
-
-    function updateStopwatchDisplay() {
-      const el = document.querySelector("#stopwatch-display");
-      const ms = stopwatchState.elapsed;
-      const totalSeconds = Math.floor(ms / 1000);
-      const minutes = Math.floor(totalSeconds / 60);
-      const seconds = totalSeconds % 60;
-      const milliseconds = ms % 1000;
-
-      const minStr = String(minutes).padStart(2, '0');
-      const secStr = String(seconds).padStart(2, '0');
-      const msStr = String(milliseconds).padStart(3, '0');
-
-      el.textContent = `${minStr}:${secStr}.${msStr}`;
-    }
-
-    function startStopwatch() {
-      stopwatchState.running = true;
-      stopwatchState.paused = false;
-      stopwatchState.startTime = Date.now() - stopwatchState.pausedTime;
-
-      document.querySelector("#stopwatch-start").style.display = "none";
-      document.querySelector("#stopwatch-pause").style.display = "inline-block";
-      document.querySelector("#stopwatch-record").style.display = "inline-block";
-
-      function stopwatchLoop() {
-        if (!stopwatchState.running) return;
-
-        stopwatchState.elapsed = Date.now() - stopwatchState.startTime;
-        updateStopwatchDisplay();
-        stopwatchState.animationFrameId = requestAnimationFrame(stopwatchLoop);
-      }
-
-      stopwatchLoop();
-    }
-
-    function pauseStopwatch() {
-      stopwatchState.running = false;
-      stopwatchState.paused = true;
-      stopwatchState.pausedTime = stopwatchState.elapsed;
-      document.querySelector("#stopwatch-pause").style.display = "none";
-      document.querySelector("#stopwatch-resume").style.display = "inline-block";
-      cancelAnimationFrame(stopwatchState.animationFrameId);
-      stopwatchState.animationFrameId = null;
-    }
-
-    function resumeStopwatch() {
-      cancelAnimationFrame(stopwatchState.animationFrameId); // 중복 루프 방지
-      stopwatchState.animationFrameId = null;
-      startStopwatch();
-      document.querySelector("#stopwatch-resume").style.display = "none";
-      document.querySelector("#stopwatch-pause").style.display = "inline-block";
-    }
-
-    function renderStopwatchLaps() {
-      const lapsContainer = document.querySelector("#stopwatch-laps");
-      if (stopwatchState.records.length === 0) {
-        lapsContainer.innerHTML = "";
-        return;
-      }
-
-      lapsContainer.innerHTML = stopwatchState.records
-        .map((rec) => {
-          const ms = rec.time;
-          const totalSeconds = Math.floor(ms / 1000);
-          const min = Math.floor(totalSeconds / 60);
-          const sec = totalSeconds % 60;
-          const msVal = ms % 1000;
-          const minStr = String(min).padStart(2, '0');
-          const secStr = String(sec).padStart(2, '0');
-          const msStr = String(msVal).padStart(3, '0');
-          return `<div class="stopwatch-lap"><span class="stopwatch-lap-label">Lap ${rec.lap}</span><span class="stopwatch-lap-time">${minStr}:${secStr}.${msStr}</span></div>`;
-        })
-        .join("");
-    }
-
-    function recordStopwatchLap() {
-      if (!stopwatchState.running && !stopwatchState.paused) return;
-      const lapTime = stopwatchState.elapsed;
-      const lapNum = stopwatchState.records.length + 1;
-      stopwatchState.records.push({ lap: lapNum, time: lapTime });
-      renderStopwatchLaps();
-    }
-
-    // 타이머 이벤트 리스너
-    document.querySelector("#timer-manual-btn").addEventListener("click", () => {
-      const hour = parseInt(document.querySelector("#timer-hour-input").value || "0", 10);
-      const min = parseInt(document.querySelector("#timer-min-input").value || "0", 10);
-      const sec = parseInt(document.querySelector("#timer-sec-input").value || "0", 10);
-
-      if (isNaN(hour) || isNaN(min) || isNaN(sec) || hour < 0 || hour > 99 || min < 0 || min >= 60 || sec < 0 || sec >= 60) {
-        alert("시(0~99) 분(0~59) 초(0~59) 범위로 입력해주세요.");
-        return;
-      }
-
-      const ms = (hour * 3600 + min * 60 + sec) * 1000;
-      if (ms <= 0) {
-        alert("0초 이상이어야 합니다.");
-        return;
-      }
-
-      playButtonClick();
-      startTimer(ms);
-    });
-
-    document.querySelectorAll(".timer-quick-btn").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        if (!timerState.running) return;
-        const addSeconds = parseInt(e.target.dataset.add, 10);
-        timerState.remaining += addSeconds * 1000;
-        timerState.total += addSeconds * 1000;
-        playButtonClick();
-        updateTimerDisplay();
-      });
-    });
-
-    document.querySelector("#timer-pause-resume").addEventListener("click", () => {
-      playButtonClick();
-      if (!timerState.running && timerState.paused) {
-        resumeTimer();
-      } else if (timerState.running) {
-        pauseTimer();
-      }
-    });
-
-    document.querySelector("#timer-stop").addEventListener("click", () => {
-      playButtonClick();
-      timerState.running = false;
-      timerState.paused = false;
-      cancelAnimationFrame(timerState.animationFrameId);
-      resetTimerUI();
-    });
-
-    document.querySelector("#timer-alert-10s").addEventListener("change", (e) => {
-      timerState.alert10sEnabled = e.target.checked;
-    });
-
-    document.querySelector("#timer-alert-5s").addEventListener("change", (e) => {
-      timerState.alert5sEnabled = e.target.checked;
-    });
-
-    // 스톱워치 이벤트 리스너
-    document.querySelector("#stopwatch-start").addEventListener("click", () => {
-      playButtonClick();
-      startStopwatch();
-    });
-
-    document.querySelector("#stopwatch-pause").addEventListener("click", () => {
-      playButtonClick();
-      pauseStopwatch();
-    });
-
-    document.querySelector("#stopwatch-resume").addEventListener("click", () => {
-      playButtonClick();
-      resumeStopwatch();
-    });
-
-    document.querySelector("#stopwatch-stop").addEventListener("click", () => {
-      playButtonClick();
-      stopwatchState.running = false;
-      stopwatchState.paused = false;
-      stopwatchState.elapsed = 0;
-      stopwatchState.pausedTime = 0;
-      stopwatchState.records = [];
-      updateStopwatchDisplay();
-      renderStopwatchLaps();
-      document.querySelector("#stopwatch-start").style.display = "inline-block";
-      document.querySelector("#stopwatch-pause").style.display = "none";
-      document.querySelector("#stopwatch-resume").style.display = "none";
-      document.querySelector("#stopwatch-record").style.display = "none";
-      cancelAnimationFrame(stopwatchState.animationFrameId);
-      stopwatchState.animationFrameId = null;
-      stopwatchState.running = false;
-      stopwatchState.paused = false;
-    });
-
-    document.querySelector("#stopwatch-record").addEventListener("click", () => {
-      playButtonClick();
-      recordStopwatchLap();
-    });
-
-    // 초기화
-    updateCurrentTime();
-    resetTimerUI();
-    updateStopwatchDisplay();
-
-    // ── 핀볼 입력기 ──────────────────────────────────────
     const pinballInputEl  = document.querySelector("#pinball-input");
     const pinballErrorEl  = document.querySelector("#pinball-error");
     const pinballListEl   = document.querySelector("#pinball-list");
@@ -2747,17 +2236,19 @@
 
     function parsePinballToken(raw) {
       const trimmed = raw.trim();
-      if (!trimmed) return { error: "양식에 맞게 입력해주세요. (이름 / 갯수)" };
-      const slashes = (trimmed.match(/\//g) || []).length;
-      if (slashes === 0) return { error: "슬래시(/)가 없습니다. 예: 바이오하자드 / 3" };
-      if (slashes > 1) return { error: "슬래시(/)는 하나만 사용해주세요." };
+      if (!trimmed) return { error: "\uC774\uB984\uC744 \uC785\uB825\uD574\uC8FC\uC138\uC694." };
+      const slashes = trimmed.split("/").length - 1;
+      if (slashes === 0) {
+        return { name: trimmed, count: 1 };
+      }
+      if (slashes > 1) return { error: "\uC2AC\uB798\uC2DC(/)\uB294 \uD558\uB098\uB9CC \uC0AC\uC6A9\uD574\uC8FC\uC138\uC694." };
       const [namePart, numPart] = trimmed.split("/");
       const name = namePart.trim();
       const count = parseInt(numPart.trim(), 10);
-      if (!name) return { error: "이름을 입력해주세요." };
-      if (numPart.trim() === "" || isNaN(count)) return { error: "갯수는 숫자로 입력해주세요." };
-      if (count < 1) return { error: "갯수는 1 이상이어야 합니다." };
-      if (count > 999) return { error: "갯수는 999 이하로 입력해주세요." };
+      if (!name) return { error: "\uC774\uB984\uC744 \uC785\uB825\uD574\uC8FC\uC138\uC694." };
+      if (numPart.trim() === "" || isNaN(count)) return { error: "\uAC2F\uC218\uB294 \uC22B\uC790\uB85C \uC785\uB825\uD574\uC8FC\uC138\uC694." };
+      if (count < 1) return { error: "\uAC2F\uC218\uB294 1 \uC774\uC0C1\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4." };
+      if (count > 999) return { error: "\uAC2F\uC218\uB294 999 \uC774\uD558\uB85C \uC785\uB825\uD574\uC8FC\uC138\uC694." };
       return { name, count };
     }
 
@@ -2778,17 +2269,17 @@
       const { entries } = pinballState;
       if (entries.length === 0) {
         pinballSummaryEl.innerHTML = "";
-        pinballOutputEl.textContent = "아직 항목이 없습니다.";
+        pinballOutputEl.textContent = "\uC544\uC9C1 \uD56D\uBAA9\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.";
         pinballOutputEl.className = "pinball-output";
         return;
       }
 
       const total = entries.reduce((s, e) => s + e.count, 0);
       pinballSummaryEl.innerHTML =
-        entries.map(e => `<div class="pinball-summary-item">${e.name} <span style="color:var(--accent-strong)">${e.count}개</span></div>`).join("") +
-        `<div class="pinball-summary-item pinball-summary-total">합계 ${total}개</div>`;
+        entries.map((e) => "<div class=\"pinball-summary-item\">" + e.name + " <span style=\"color:var(--accent-strong)\">" + e.count + "\uAC1C</span></div>").join("") +
+        "<div class=\"pinball-summary-item pinball-summary-total\">\uD569\uACC4 " + total + "\uAC1C</div>";
 
-      const output = entries.map(e => `${e.name}*${e.count}`).join(",");
+      const output = entries.map((e) => e.name + "*" + e.count).join(",");
       pinballOutputEl.textContent = output;
       pinballOutputEl.className = "pinball-output has-data";
     }
@@ -2796,7 +2287,7 @@
     function renderPinballList() {
       const { entries } = pinballState;
       if (entries.length === 0) {
-        pinballListEl.innerHTML = `<div class="pinball-empty">항목을 입력하고 Enter를 누르세요.</div>`;
+        pinballListEl.innerHTML = "<div class=\"pinball-empty\">\uD56D\uBAA9\uC744 \uC785\uB825\uD558\uACE0 Enter\uB97C \uB204\uB974\uC138\uC694.</div>";
         return;
       }
 
@@ -2817,7 +2308,7 @@
         btns.className = "pinball-item-btns";
 
         const minusBtn = document.createElement("button");
-        minusBtn.textContent = "−";
+        minusBtn.textContent = "\u2212";
         minusBtn.onclick = () => {
           entry.count -= 1;
           if (entry.count <= 0) pinballState.entries.splice(idx, 1);
@@ -2836,7 +2327,7 @@
         };
 
         const delBtn = document.createElement("button");
-        delBtn.textContent = "×";
+        delBtn.textContent = "\u00D7";
         delBtn.className = "del-btn";
         delBtn.onclick = () => {
           pinballState.entries.splice(idx, 1);
@@ -2992,8 +2483,10 @@
   <script>
     (function () {
       var urlInput    = document.getElementById("qr-url-input");
+      var titleInput  = document.getElementById("qr-title-input");
       var fgPicker    = document.getElementById("qr-fg-color");
       var borderPicker= document.getElementById("qr-border-color");
+      var titleColorPicker = document.getElementById("qr-title-color");
       var generateBtn = document.getElementById("qr-generate-btn");
       var result      = document.getElementById("qr-result");
       var canvasWrap  = document.getElementById("qr-canvas-wrap");
@@ -3022,25 +2515,43 @@
       }
 
       function drawFinal(qrCanvas) {
-        var margin = PAD + BORDER_W;       // 외곽선 두께 + 여백
+        var margin = PAD + BORDER_W;
+        var title = titleInput ? titleInput.value.trim() : "";
+        var titleChars = Array.from(title);
+        if (titleChars.length > 24) {
+          title = titleChars.slice(0, 24).join("");
+          if (titleInput) titleInput.value = title;
+        }
+        var titleSpace = title ? 46 : 0;
         var total  = QR_SIZE + margin * 2;
         var out    = document.createElement("canvas");
         out.width  = total;
-        out.height = total;
+        out.height = total + titleSpace;
         var ctx    = out.getContext("2d");
 
-        // 흰 배경
         ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, total, total);
+        ctx.fillRect(0, 0, out.width, out.height);
 
-        // QR 이미지
         ctx.drawImage(qrCanvas, margin, margin, QR_SIZE, QR_SIZE);
 
-        // 얇은 외곽선 (stroke) — QR 위에 그려서 안쪽 여백이 보임
+        if (title) {
+          ctx.fillStyle = titleColorPicker ? titleColorPicker.value : "#163240";
+          ctx.font = "800 20px SUIT, sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          var maxWidth = total - margin * 2;
+          var titleParts = Array.from(title);
+          var titleText = title;
+          for (var cut = titleParts.length; cut > 0 && ctx.measureText(titleText).width > maxWidth; cut -= 1) {
+            titleText = titleParts.slice(0, Math.max(1, cut - 1)).join("") + "...";
+          }
+          ctx.fillText(titleText, total / 2, total + titleSpace / 2 - 2);
+        }
+
         ctx.strokeStyle = borderPicker.value;
         ctx.lineWidth   = BORDER_W;
         var half = BORDER_W / 2;
-        roundRect(ctx, half, half, total - BORDER_W, total - BORDER_W, RADIUS);
+        roundRect(ctx, half, half, total - BORDER_W, out.height - BORDER_W, RADIUS);
         ctx.stroke();
 
         canvasWrap.innerHTML = "";
@@ -3079,13 +2590,18 @@
 
       generateBtn.onclick = generate;
 
-      urlInput.addEventListener("keydown", function (e) {
-        if (e.key === "Enter") generate();
+      [urlInput, titleInput].forEach(function (input) {
+        if (!input) return;
+        input.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") generate();
+        });
       });
 
       // 색상 변경 시 자동 재생성
-      fgPicker.oninput    = function () { if (qrInstance) generate(); };
-      borderPicker.oninput= function () { if (qrInstance) generate(); };
+      fgPicker.oninput = function () { if (qrInstance) generate(); };
+      borderPicker.oninput = function () { if (qrInstance) generate(); };
+      titleInput.oninput = function () { if (qrInstance) generate(); };
+      titleColorPicker.oninput = function () { if (qrInstance) generate(); };
 
       function getFinalCanvas() {
         return canvasWrap.querySelector("canvas");
